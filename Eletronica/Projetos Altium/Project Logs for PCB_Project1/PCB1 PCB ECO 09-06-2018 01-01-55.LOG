@@ -1,0 +1,55 @@
+Removed Pin From Net: NetName=Netkk1_1 Pin=kk3-2
+Removed Member From Class: ClassName=TesteRJ45 Member=kk3
+Removed Member From Class: ClassName=TesteRJ45 Member=P1
+Removed Member From Class: ClassName=TesteRJ45 Member=P2
+Removed Member From Class: ClassName=TesteRJ45 Member=P3
+Change Component Footprint: Designator=kk1 Old Footprint=3-vias New Footprint=2-vias
+Change Component Comment : Designator=kk1 Old Comment=KK 3 vias New Comment=KK2
+Added Component: Designator=KK2(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=RJ1(RJ45_Simples)
+Add component. Clean all parameters for all variants
+Added Component: Designator=RJ2(RJ45_Simples)
+Add component. Clean all parameters for all variants
+Added Component: Designator=RJ3(RJ45_Simples)
+Add component. Clean all parameters for all variants
+Added Pin To Net: NetName=Netkk1_1 Pin=kk1-1
+Added Pin To Net: NetName=Netkk1_2 Pin=kk1-2
+Added Pin To Net: NetName=Netkk1_2 Pin=KK2-1
+Added Pin To Net: NetName=Netkk1_1 Pin=KK2-2
+Added Pin To Net: NetName=NetRJ1_1 Pin=RJ1-1
+Added Pin To Net: NetName=NetRJ1_1 Pin=RJ2-1
+Added Pin To Net: NetName=NetRJ1_1 Pin=RJ3-8
+Added Net: Name=NetRJ1_1
+Added Pin To Net: NetName=NetRJ1_2 Pin=RJ1-2
+Added Pin To Net: NetName=NetRJ1_2 Pin=RJ2-2
+Added Pin To Net: NetName=NetRJ1_2 Pin=RJ3-7
+Added Net: Name=NetRJ1_2
+Added Pin To Net: NetName=NetRJ1_3 Pin=RJ1-3
+Added Pin To Net: NetName=NetRJ1_3 Pin=RJ2-3
+Added Pin To Net: NetName=NetRJ1_3 Pin=RJ3-6
+Added Net: Name=NetRJ1_3
+Added Pin To Net: NetName=NetRJ1_4 Pin=RJ1-4
+Added Pin To Net: NetName=NetRJ1_4 Pin=RJ2-4
+Added Pin To Net: NetName=NetRJ1_4 Pin=RJ3-5
+Added Net: Name=NetRJ1_4
+Added Pin To Net: NetName=NetRJ1_5 Pin=RJ1-5
+Added Pin To Net: NetName=NetRJ1_5 Pin=RJ2-5
+Added Pin To Net: NetName=NetRJ1_5 Pin=RJ3-4
+Added Net: Name=NetRJ1_5
+Added Pin To Net: NetName=NetRJ1_6 Pin=RJ1-6
+Added Pin To Net: NetName=NetRJ1_6 Pin=RJ2-6
+Added Pin To Net: NetName=NetRJ1_6 Pin=RJ3-3
+Added Net: Name=NetRJ1_6
+Added Pin To Net: NetName=NetRJ1_7 Pin=RJ1-7
+Added Pin To Net: NetName=NetRJ1_7 Pin=RJ2-7
+Added Pin To Net: NetName=NetRJ1_7 Pin=RJ3-2
+Added Net: Name=NetRJ1_7
+Added Pin To Net: NetName=NetRJ1_8 Pin=RJ1-8
+Added Pin To Net: NetName=NetRJ1_8 Pin=RJ2-8
+Added Pin To Net: NetName=NetRJ1_8 Pin=RJ3-1
+Added Net: Name=NetRJ1_8
+Added Member To Class: ClassName=TesteRJ45 Member=Component KK2
+Added Member To Class: ClassName=TesteRJ45 Member=Component RJ1 RJ45
+Added Member To Class: ClassName=TesteRJ45 Member=Component RJ2 RJ45
+Added Member To Class: ClassName=TesteRJ45 Member=Component RJ3 RJ45

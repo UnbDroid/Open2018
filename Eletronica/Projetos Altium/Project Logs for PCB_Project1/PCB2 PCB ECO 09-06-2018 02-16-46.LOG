@@ -1,0 +1,4 @@
+Change Component Footprint: Designator=K13 Old Footprint=3-vias New Footprint=2-vias
+Change Component Comment : Designator=K13 Old Comment=KK3 New Comment=KK2
+Added Pin To Net: NetName=NetK12_2 Pin=K13-1
+Added Pin To Net: NetName=NetK12_1 Pin=K13-2

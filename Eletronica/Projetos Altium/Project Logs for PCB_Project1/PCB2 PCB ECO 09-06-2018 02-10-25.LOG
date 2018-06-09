@@ -1,0 +1,14 @@
+Added Component: Designator=K9(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K11(2-vias)
+Add component. Clean all parameters for all variants
+Added Pin To Net: NetName=NetK9_1 Pin=K9-1
+Added Net: Name=NetK9_1
+Added Pin To Net: NetName=NetK9_2 Pin=K9-2
+Added Net: Name=NetK9_2
+Added Pin To Net: NetName=NetK10_3 Pin=K11-2
+Added Net: Name=NetK10_3
+Added Pin To Net: NetName=NetK10_4 Pin=K11-1
+Added Net: Name=NetK10_4
+Added Member To Class: ClassName=TesteKK Member=Component K9 KK2
+Added Member To Class: ClassName=TesteKK Member=Component K11 KK2

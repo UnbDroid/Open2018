@@ -1,0 +1,9 @@
+Added Component: Designator=K12(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K13(3-vias)
+Add component. Clean all parameters for all variants
+Added Net: Name=NetK12_1
+Added Net: Name=NetK12_2
+Added Net: Name=NetK12_3
+Added Member To Class: ClassName=TesteKK Member=Component K12 KK3
+Added Member To Class: ClassName=TesteKK Member=Component K13 KK3

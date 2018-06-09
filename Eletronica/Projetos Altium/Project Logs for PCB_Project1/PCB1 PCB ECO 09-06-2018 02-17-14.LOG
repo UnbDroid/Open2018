@@ -1,0 +1,40 @@
+Added Component: Designator=K7(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K8(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K9(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K10(4-vias)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Fabricante"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.molex.com/molex/products/family?key=kk_254_rpc_connector_system&channel=products&chanName=family&pageTitle=Introduction&parentKey=kk_interconnect_solutions"; VariantName = "[No Variations]"
+Added Component: Designator=K11(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K12(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K13(2-vias)
+Add component. Clean all parameters for all variants
+Added Pin To Net: NetName=NetK7_1 Pin=K7-1
+Added Pin To Net: NetName=NetK7_1 Pin=K8-2
+Added Net: Name=NetK7_1
+Added Pin To Net: NetName=NetK7_2 Pin=K7-2
+Added Pin To Net: NetName=NetK7_2 Pin=K8-1
+Added Net: Name=NetK7_2
+Added Pin To Net: NetName=NetK9_1 Pin=K9-1
+Added Pin To Net: NetName=NetK9_1 Pin=K10-2
+Added Net: Name=NetK9_1
+Added Pin To Net: NetName=NetK9_2 Pin=K9-2
+Added Pin To Net: NetName=NetK9_2 Pin=K10-1
+Added Net: Name=NetK9_2
+Added Pin To Net: NetName=NetK10_3 Pin=K10-3
+Added Pin To Net: NetName=NetK10_3 Pin=K11-2
+Added Net: Name=NetK10_3
+Added Pin To Net: NetName=NetK10_4 Pin=K10-4
+Added Pin To Net: NetName=NetK10_4 Pin=K11-1
+Added Net: Name=NetK10_4
+Added Pin To Net: NetName=NetK12_1 Pin=K13-2
+Added Net: Name=NetK12_1
+Added Pin To Net: NetName=NetK12_2 Pin=K13-1
+Added Net: Name=NetK12_2
+Added Class: Name=TesteKK
+Added Room: Name=TesteKK

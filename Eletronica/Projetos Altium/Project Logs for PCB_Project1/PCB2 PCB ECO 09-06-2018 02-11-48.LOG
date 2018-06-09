@@ -1,0 +1,9 @@
+Added Component: Designator=K10(4-vias)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Fabricante"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.molex.com/molex/products/family?key=kk_254_rpc_connector_system&channel=products&chanName=family&pageTitle=Introduction&parentKey=kk_interconnect_solutions"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=NetK9_2 Pin=K10-1
+Added Pin To Net: NetName=NetK9_1 Pin=K10-2
+Added Pin To Net: NetName=NetK10_3 Pin=K10-3
+Added Pin To Net: NetName=NetK10_4 Pin=K10-4
+Added Member To Class: ClassName=TesteKK Member=Component K10 KK4

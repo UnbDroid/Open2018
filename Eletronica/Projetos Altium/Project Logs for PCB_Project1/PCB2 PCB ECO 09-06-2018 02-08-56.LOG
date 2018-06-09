@@ -1,0 +1,12 @@
+Added Component: Designator=K7(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K8(2-vias)
+Add component. Clean all parameters for all variants
+Added Pin To Net: NetName=NetK7_1 Pin=K7-1
+Added Pin To Net: NetName=NetK7_2 Pin=K7-2
+Added Pin To Net: NetName=NetK7_2 Pin=K8-1
+Added Pin To Net: NetName=NetK7_1 Pin=K8-2
+Added Member To Class: ClassName=TesteKK Member=Component K7 KK2
+Added Member To Class: ClassName=TesteKK Member=Component K8 KK2
+Added Room: Name=TesteKK
+Added Room: Name=TesteRJ45

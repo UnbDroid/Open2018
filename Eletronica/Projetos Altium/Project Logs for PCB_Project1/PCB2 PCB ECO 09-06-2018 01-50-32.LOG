@@ -1,0 +1,73 @@
+Added Component: Designator=K1(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K2(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K3(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K4(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K7(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K8(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=RJ1(RJ45_Simples)
+Add component. Clean all parameters for all variants
+Added Component: Designator=RJ2(RJ45_Simples)
+Add component. Clean all parameters for all variants
+Added Component: Designator=RJ3(RJ45_Simples)
+Add component. Clean all parameters for all variants
+Added Pin To Net: NetName=NetK1_1 Pin=K1-1
+Added Pin To Net: NetName=NetK1_1 Pin=K2-2
+Added Net: Name=NetK1_1
+Added Pin To Net: NetName=NetK1_2 Pin=K1-2
+Added Pin To Net: NetName=NetK1_2 Pin=K2-1
+Added Net: Name=NetK1_2
+Added Net: Name=NetK3_1
+Added Net: Name=NetK3_2
+Added Net: Name=NetK3_3
+Added Net: Name=NetK5_p1
+Added Net: Name=NetK5_p2
+Added Net: Name=NetK5_p3
+Added Net: Name=NetK5_p4
+Added Pin To Net: NetName=NetK7_1 Pin=K7-1
+Added Pin To Net: NetName=NetK7_1 Pin=K8-2
+Added Net: Name=NetK7_1
+Added Pin To Net: NetName=NetK7_2 Pin=K7-2
+Added Pin To Net: NetName=NetK7_2 Pin=K8-1
+Added Net: Name=NetK7_2
+Added Pin To Net: NetName=NetRJ1_1 Pin=RJ1-1
+Added Pin To Net: NetName=NetRJ1_1 Pin=RJ2-1
+Added Pin To Net: NetName=NetRJ1_1 Pin=RJ3-8
+Added Net: Name=NetRJ1_1
+Added Pin To Net: NetName=NetRJ1_2 Pin=RJ1-2
+Added Pin To Net: NetName=NetRJ1_2 Pin=RJ2-2
+Added Pin To Net: NetName=NetRJ1_2 Pin=RJ3-7
+Added Net: Name=NetRJ1_2
+Added Pin To Net: NetName=NetRJ1_3 Pin=RJ1-3
+Added Pin To Net: NetName=NetRJ1_3 Pin=RJ2-3
+Added Pin To Net: NetName=NetRJ1_3 Pin=RJ3-6
+Added Net: Name=NetRJ1_3
+Added Pin To Net: NetName=NetRJ1_4 Pin=RJ1-4
+Added Pin To Net: NetName=NetRJ1_4 Pin=RJ2-4
+Added Pin To Net: NetName=NetRJ1_4 Pin=RJ3-5
+Added Net: Name=NetRJ1_4
+Added Pin To Net: NetName=NetRJ1_5 Pin=RJ1-5
+Added Pin To Net: NetName=NetRJ1_5 Pin=RJ2-5
+Added Pin To Net: NetName=NetRJ1_5 Pin=RJ3-4
+Added Net: Name=NetRJ1_5
+Added Pin To Net: NetName=NetRJ1_6 Pin=RJ1-6
+Added Pin To Net: NetName=NetRJ1_6 Pin=RJ2-6
+Added Pin To Net: NetName=NetRJ1_6 Pin=RJ3-3
+Added Net: Name=NetRJ1_6
+Added Pin To Net: NetName=NetRJ1_7 Pin=RJ1-7
+Added Pin To Net: NetName=NetRJ1_7 Pin=RJ2-7
+Added Pin To Net: NetName=NetRJ1_7 Pin=RJ3-2
+Added Net: Name=NetRJ1_7
+Added Pin To Net: NetName=NetRJ1_8 Pin=RJ1-8
+Added Pin To Net: NetName=NetRJ1_8 Pin=RJ2-8
+Added Pin To Net: NetName=NetRJ1_8 Pin=RJ3-1
+Added Net: Name=NetRJ1_8
+Added Class: Name=TesteKK
+Added Class: Name=TesteRJ45
+Added Room: Name=TesteKK
+Added Room: Name=TesteRJ45
