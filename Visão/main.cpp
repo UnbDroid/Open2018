@@ -17,20 +17,20 @@ using namespace std;
 #define MAX_L_B 255
 
 #define MIN_A_B 0
-#define MAX_A_B 50
+#define MAX_A_B 255
 
 #define MIN_B_B 0
-#define MAX_B_B 175
+#define MAX_B_B 120
 
 
 #define MIN_L_G 0
 #define MAX_L_G 255
 
 #define MIN_A_G 0
-#define MAX_A_G 150
+#define MAX_A_G 103
 
-#define MIN_B_G 00
-#define MAX_B_G 50
+#define MIN_B_G 0
+#define MAX_B_G 255
 
 
 #define MIN_L_R 0
@@ -40,17 +40,17 @@ using namespace std;
 #define MAX_A_R 255
 
 #define MIN_B_R 0 
-#define MAX_B_R 75
+#define MAX_B_R 255
 
 /**************/
 #define LabRminthresh 150
 #define LabRmaxthresh 255
 
 #define LabGminthresh 0
-#define LabGmaxthresh 130
+#define LabGmaxthresh 103
 
 #define LabBminthresh 0
-#define LabBmaxthresh 130
+#define LabBmaxthresh 120
 
 /* Funcao que utiliza uma struct do tipo timeval e retorna o intervalo de tempo, em microsegundos,
    que se passaram desde a epoch do linux														*/
