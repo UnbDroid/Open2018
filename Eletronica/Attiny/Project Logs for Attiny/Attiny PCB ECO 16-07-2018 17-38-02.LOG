@@ -1,0 +1,4 @@
+Added Component: Designator=*(ATTINY13)
+Add component. Clean all parameters for all variants
+Added Class: Name=Attiny
+Added Room: Name=Attiny
