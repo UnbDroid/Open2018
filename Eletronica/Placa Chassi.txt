@@ -7,6 +7,17 @@ Placa Chassi:
 
 
 Mapeamento:
+
+    - Central para Nano
+        1 -> D12(MISO) Nano 1
+        2 -> D11(MOSI) Nano 1
+        3 -> 
+        4 -> SCK (D13) Nano 1 & 2
+        5 -> D12(MISO) Nano 2
+        6 -> D11(MOSI) Nano 2
+        7 -> D10(SS) Nano 1
+        8 -> D10(SS) Nano 2
+
     -TCS 3200
         - RJ45 -> Arduino Nano
             1 -> RJ45Central GND

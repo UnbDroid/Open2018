@@ -1,0 +1,9 @@
+Change Component Footprint: Designator=Central_Principal Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Change Component Footprint: Designator=RJ2 Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Change Component Footprint: Designator=TCS2 Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Change Component Footprint: Designator=TCS3 Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Change Component Footprint: Designator=TCS4 Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Change Component Comment : Designator=Encoder_6 Old Comment=Encoder1 New Comment=KK4
+Change Component Comment : Designator=Encoder_5 Old Comment=Encoder_2 New Comment=KK4
+Change Component Comment : Designator=Encoder_4 Old Comment=Encoder_3 New Comment=KK4
+Change Component Comment : Designator=K1 Old Comment=Encoder_4 New Comment=KK4

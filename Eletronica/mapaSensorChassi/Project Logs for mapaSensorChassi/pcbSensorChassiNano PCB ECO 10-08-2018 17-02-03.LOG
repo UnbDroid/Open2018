@@ -1,0 +1,18 @@
+Added Component: Designator=K2(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K3(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=K4(3-vias)
+Add component. Clean all parameters for all variants
+Added Pin To Net: NetName=GND Pin=K2-1
+Added Pin To Net: NetName=5VCC Pin=K2-2
+Added Pin To Net: NetName=3VCC Pin=K2-3
+Added Pin To Net: NetName=NetK3_1 Pin=K3-1
+Added Pin To Net: NetName=NetK3_2 Pin=K3-2
+Added Pin To Net: NetName=NetK3_3 Pin=K3-3
+Added Pin To Net: NetName=NetK3_1 Pin=K4-1
+Added Pin To Net: NetName=NetK3_2 Pin=K4-2
+Added Pin To Net: NetName=NetK3_3 Pin=K4-3
+Added Member To Class: ClassName=schSensorChassiNano Member=Component K2 KK3
+Added Member To Class: ClassName=schSensorChassiNano Member=Component K3 KK3
+Added Member To Class: ClassName=schSensorChassiNano Member=Component K4 KK3
