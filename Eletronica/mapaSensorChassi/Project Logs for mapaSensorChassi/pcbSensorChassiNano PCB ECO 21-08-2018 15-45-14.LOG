@@ -1,0 +1,15 @@
+Added Pin To Net: NetName=D12_MISO_Nano1 Pin=Central_Principal-1
+Added Pin To Net: NetName=D11_MOSI_Nano1 Pin=Central_Principal-2
+Added Pin To Net: NetName=SCK Pin=Central_Principal-4
+Added Pin To Net: NetName=D12_MISO_Nano2 Pin=Central_Principal-5
+Added Pin To Net: NetName=D11_MOSI_Nano2 Pin=Central_Principal-6
+Added Pin To Net: NetName=D10_SS_Nano1 Pin=Central_Principal-7
+Added Pin To Net: NetName=D10_SS_Nano2 Pin=Central_Principal-8
+Added Pin To Net: NetName=NetEncoder_6_3 Pin=RJ2-1
+Added Pin To Net: NetName=NetEncoder_6_2 Pin=RJ2-2
+Added Pin To Net: NetName=NetEncoder_5_3 Pin=RJ2-3
+Added Pin To Net: NetName=NetEncoder_5_2 Pin=RJ2-4
+Added Pin To Net: NetName=NetEncoder_4_3 Pin=RJ2-5
+Added Pin To Net: NetName=NetEncoder_4_2 Pin=RJ2-6
+Added Pin To Net: NetName=NetK1_3 Pin=RJ2-7
+Added Pin To Net: NetName=NetK1_2 Pin=RJ2-8
