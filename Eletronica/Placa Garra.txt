@@ -5,3 +5,5 @@ Placa da Garra
     dois pra garra em si
     os motores de passo vao passar por um driver(a4988)
 - 2 eletroimãs
+- TCS320
+

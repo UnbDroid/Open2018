@@ -9,43 +9,46 @@ Placa Chassi:
 Mapeamento:
 
     - Central para Nano
-        1 -> D12(MISO) Nano 1
-        2 -> D11(MOSI) Nano 1
-        3 -> 
-        4 -> SCK (D13) Nano 1 & 2
-        5 -> D12(MISO) Nano 2
-        6 -> D11(MOSI) Nano 2
-        7 -> D10(SS) Nano 1
-        8 -> D10(SS) Nano 2
+        1 -> D12 Nano 1       /(MISO) 
+        2 -> D11 Nano 1       /(MOSI) 
+        3 ->            
+        4 -> D13 Nano 1 & 2   /SCK   
+        5 -> D12 Nano 2       /(MISO) 
+        6 -> D11 Nano 2       /(MOSI) 
+        7 -> D10 Nano 1       /(SS) 
+        8 -> D10 Nano 2       /(SS) 
 
     -TCS 3200
         - RJ45 -> Arduino Nano
-            1 -> RJ45Central GND
-            2 -> D7_nano2
-            3 -> D4_nano2
-            4 -> D8_nano2
-            5 -> D2_nano2
-            6 -> A0_nano2
-            7_1 -> D9(PWM)_nano2
-            7_2 -> D6(PWM)_nano2
-            7_3 -> D5(PWM)_nano2
-            7_4 -> D3(PWM)_nano2
-            8 -> RJ45Central 5VCC
+            1 -> RJ45Central        /GND
+            2 -> D7_nano2           /S0
+            3 -> D4_nano2           /S1
+            4 -> D8_nano2           /S2
+            5 -> D2_nano2           /S3
+            6 -> A0_nano2           /OE -> OUTPUT ENABLE -> GND if always sending value, or Frequency Input 
+            7_1 -> D9(PWM)_nano2    /OUT_1
+            7_2 -> D6(PWM)_nano2    /OUT_2    
+            7_3 -> D5(PWM)_nano2    /OUT_3
+            7_4 -> D3(PWM)_nano2    /OUT_4
+            8 -> RJ45Central        /5VCC
     -LDR
         - RJ45 -> Arduino Nano
-            1 -> A0_nano1
-            2 -> A1_nano1
-            3 -> A2_nano1
-            4 -> A3_nano1
+            RJ_LDR_1
+            1 -> A0_nano1           /LDR_1
+            3 -> A1_nano1           /LDR_2
+            5 -> A2_nano1           /LDR_3
+            7 -> A3_nano1           /LDR_4
 
-            5 -> A4_nano1
-            6 -> A5_nano1
-            7 -> A6_nano1
-            8 -> A7_nano1
+            RJ_LDR_2
+            1 -> A4_nano1           /LDR_5
+            3 -> A5_nano1           /LDR_6
+            5 -> A6_nano1           /LDR_7
+            7 -> A7_nano1           /LDR_8
 
-            9 -> A1_nano2
-            10 -> A2_nano2
-            11 -> A3_nano2
-            12 -> A4_nano2
+            RJ_LDR_3
+            1 -> A1_nano2           /LDR_9
+            3 -> A2_nano2           /LDR_10
+            5 -> A3_nano2           /LDR_11
+            7 -> A4_nano2           /LDR_12
 
                  

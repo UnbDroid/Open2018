@@ -1,0 +1,1 @@
+Pinagem BBB: https://github.com/beagleboard/beaglebone-blue/blob/master/BeagleBone_Blue_Pin_Table.csv
