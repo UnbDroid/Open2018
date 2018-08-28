@@ -1,0 +1,26 @@
+Removed Pin From Net: NetName=NetLDR_1_2_1 Pin=Nano_1-22
+Removed Pin From Net: NetName=NetLDR_1_2_3 Pin=Nano_1-23
+Removed Pin From Net: NetName=NetLDR_1_2_5 Pin=Nano_1-24
+Removed Pin From Net: NetName=NetLDR_1_2_7 Pin=Nano_1-25
+Removed Pin From Net: NetName=NetLDR_1_2_7 Pin=R21-1
+Removed Pin From Net: NetName=NetLDR_1_2_5 Pin=R22-1
+Removed Pin From Net: NetName=NetLDR_1_2_3 Pin=R23-1
+Removed Pin From Net: NetName=NetLDR_1_2_1 Pin=R24-1
+Change Component Footprint: Designator=LDR_1_2 Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Change Component Footprint: Designator=LDR_2_2 Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Change Component Footprint: Designator=TCS1 Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Change Component Footprint: Designator=TCS2 Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Change Component Footprint: Designator=TCS3 Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Change Component Footprint: Designator=TCS4 Old Footprint=RJ45_90 New Footprint=RJ45_Simples
+Added Pin To Net: NetName=NetLDR_1_2_7 Pin=Nano_1-22
+Added Pin To Net: NetName=NetLDR_1_2_5 Pin=Nano_1-23
+Added Pin To Net: NetName=NetLDR_1_2_3 Pin=Nano_1-24
+Added Pin To Net: NetName=NetLDR_1_2_1 Pin=Nano_1-25
+Added Pin To Net: NetName=NetLDR_1_2_1 Pin=R21-1
+Added Pin To Net: NetName=NetLDR_1_2_3 Pin=R22-1
+Added Pin To Net: NetName=NetLDR_1_2_5 Pin=R23-1
+Added Pin To Net: NetName=NetLDR_1_2_7 Pin=R24-1
+Added Member To Class: ClassName=schBeagleBone Member=Component C? Cap
+Added Member To Class: ClassName=schBeagleBone Member=Component RJ? RJ45
+Added Member To Class: ClassName=schBeagleBone Member=Component RJ? RJ45
+Added Member To Class: ClassName=schBeagleBone Member=Component RJ? RJ45
