@@ -1,0 +1,22 @@
+Removed Member From Class: ClassName=schBeagleBone Member=K?
+Change Component Designator: OldDesignator=C? NewDesignator=C3
+Change Component Designator: OldDesignator=C? NewDesignator=C4
+Change Component Designator: OldDesignator=K? NewDesignator=K3
+Change Component Designator: OldDesignator=K? NewDesignator=K4
+Change Component Designator: OldDesignator=K? NewDesignator=K5
+Change Component Designator: OldDesignator=K? NewDesignator=K6
+Change Component Designator: OldDesignator=K? NewDesignator=K7
+Change Component Designator: OldDesignator=RJ? NewDesignator=RJ1
+Change Component Designator: OldDesignator=RJ? NewDesignator=RJ3
+Change Component Designator: OldDesignator=RJ? NewDesignator=RJ4
+Change Component Designator: OldDesignator=RJ? NewDesignator=RJ5
+Change Net Name : Old Net Name=NetC?_1 New Net Name=NetC4_1
+Change Net Name : Old Net Name=NetC?_2 New Net Name=NetC3_2
+Added Member To Class: ClassName=schBeagleBone Member=Component C4 Cap
+Added Member To Class: ClassName=schSensorChassiNano Member=Component K4 KK3
+Added Member To Class: ClassName=schSensorChassiNano Member=Component K5 KK3
+Added Member To Class: ClassName=schSensorChassiNano Member=Component K6 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component K7 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component RJ1 RJ45
+Added Member To Class: ClassName=schBeagleBone Member=Component RJ3 RJ45
+Added Member To Class: ClassName=schBeagleBone Member=Component RJ4 RJ45

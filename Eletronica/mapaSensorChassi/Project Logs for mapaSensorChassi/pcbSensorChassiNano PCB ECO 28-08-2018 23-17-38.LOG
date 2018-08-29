@@ -1,0 +1,4 @@
+Removed Pin From Net: NetName=5VCC Pin=Nano_1-11
+Removed Pin From Net: NetName=5VCC Pin=TCS1-7
+Added Pin To Net: NetName=TCS_OUT_1 Pin=TCS1-7
+Added Net: Name=TCS_OUT_1
