@@ -1,0 +1,24 @@
+Change Component Footprint: Designator=D1 Old Footprint=2-vias New Footprint=3.2X1.6X1.1
+Change Component Footprint: Designator=D2 Old Footprint=2-vias New Footprint=3.2X1.6X1.1
+Change Component Footprint: Designator=Eltroima1 Old Footprint=3-vias New Footprint=E3
+Change Component Footprint: Designator=Eltroima2 Old Footprint=3-vias New Footprint=E3
+Change Physical Footprint: Designator=C5 Old Footprint=RAD-0.3 New Footprint=RAD-0.3
+Change Physical Footprint: Designator=C6 Old Footprint=RAD-0.3 New Footprint=RAD-0.3
+Change Physical Footprint: Designator=Central Old Footprint=RJ45_Simples New Footprint=RJ45_Simples
+Change Physical Footprint: Designator=ChaveEN Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=Driver 1 Old Footprint=A4988 New Footprint=A4988
+Change Physical Footprint: Designator=Driver 2 Old Footprint=A4988 New Footprint=A4988
+Change Physical Footprint: Designator=Eletroima1 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=Eletroima2 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=Jack 5v Old Footprint=JACK J4 New Footprint=JACK J4
+Change Physical Footprint: Designator=Jack mot Old Footprint=JACK J4 New Footprint=JACK J4
+Change Physical Footprint: Designator=Matriz Old Footprint=JTS-XH (5T) New Footprint=JTS-XH (5T)
+Change Physical Footprint: Designator=Mot1 Old Footprint=4-vias New Footprint=4-vias
+Change Physical Footprint: Designator=Mot2 Old Footprint=4-vias New Footprint=4-vias
+Change Physical Footprint: Designator=MS1 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=MS2 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=MS3 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=Nano_2 Old Footprint=Arduino_Nano New Footprint=Arduino_Nano
+Change Physical Footprint: Designator=R1 Old Footprint=AXIAL-0.3 New Footprint=AXIAL-0.3
+Change Physical Footprint: Designator=R2 Old Footprint=AXIAL-0.3 New Footprint=AXIAL-0.3
+Change Physical Footprint: Designator=TCS3200 Old Footprint=RJ45_Simples New Footprint=RJ45_Simples
