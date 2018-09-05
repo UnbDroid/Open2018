@@ -1,0 +1,10 @@
+Change Physical Footprint: Designator=ChaveEN Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=D1 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=D2 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=Driver 1 Old Footprint=A4988 New Footprint=A4988
+Change Physical Footprint: Designator=Eletroima1 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=Eletroima2 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=MS1 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=MS2 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=MS3 Old Footprint=2-vias New Footprint=2-vias
+Change Physical Footprint: Designator=Nano_2 Old Footprint=Arduino_Nano New Footprint=Arduino_Nano
