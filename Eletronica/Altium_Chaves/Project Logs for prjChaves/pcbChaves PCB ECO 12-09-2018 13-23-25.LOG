@@ -1,0 +1,10 @@
+Change Component Footprint: Designator=F1 Old Footprint=AXIAL-0.9 New Footprint=Fusivel
+Change Component Footprint: Designator=F2 Old Footprint=AXIAL-0.9 New Footprint=Fusivel
+Change Component Footprint: Designator=F3 Old Footprint=AXIAL-0.9 New Footprint=Fusivel
+Change Component Footprint: Designator=F4 Old Footprint=AXIAL-0.9 New Footprint=Fusivel
+Change Component Footprint: Designator=F5 Old Footprint=AXIAL-0.9 New Footprint=Fusivel
+Change Component Footprint: Designator=F6 Old Footprint=AXIAL-0.9 New Footprint=Fusivel
+Change Component Footprint: Designator=F7 Old Footprint=AXIAL-0.9 New Footprint=Fusivel
+Change Component Footprint: Designator=F8 Old Footprint=AXIAL-0.9 New Footprint=Fusivel
+Change Component Designator: OldDesignator=in1 NewDesignator=in3.3
+Added Room: Name=schChaves

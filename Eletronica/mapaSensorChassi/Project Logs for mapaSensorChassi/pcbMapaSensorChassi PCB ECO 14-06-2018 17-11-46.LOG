@@ -1,6 +1,0 @@
-Change Class Name : Old Net Name=Open_sch New Net Name=schMapaSensorChassi
-Added Member To Class: ClassName=schMapaSensorChassi Member=Component Central_1 RJ45
-Added Member To Class: ClassName=schMapaSensorChassi Member=Component RJ1 RJ45
-Added Member To Class: ClassName=schMapaSensorChassi Member=Component TCS230_1 RJ45
-Change Room Name: Old Name=Open_sch New Name=schMapaSensorChassi
-Change Room Scope: Old Scope=InComponentClass('Open_sch') New Scope=InComponentClass('schMapaSensorChassi')
