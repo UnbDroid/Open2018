@@ -1,0 +1,3 @@
+Removed Pin From Net: NetName=12V Pin=goto3.3V-1
+Removed Pin From Net: NetName=GND Pin=goto3.3V-2
+Removed Member From Class: ClassName=schChaves Member=goto3.3V

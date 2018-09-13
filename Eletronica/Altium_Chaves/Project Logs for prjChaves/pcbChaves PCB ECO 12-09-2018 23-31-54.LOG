@@ -1,0 +1,7 @@
+Change Component Designator: OldDesignator=gotoReg NewDesignator=goto5V
+Added Component: Designator=goto3.3V(JACK J4)
+Add component. Clean all parameters for all variants
+Added Pin To Net: NetName=12V Pin=goto3.3V-1
+Added Pin To Net: NetName=GND Pin=goto3.3V-2
+Added Member To Class: ClassName=schChaves Member=Component goto3.3V Jack
+Added Room: Name=schChaves
