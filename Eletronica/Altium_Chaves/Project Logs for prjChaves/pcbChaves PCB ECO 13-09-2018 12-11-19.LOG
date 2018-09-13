@@ -1,0 +1,61 @@
+Removed Pin From Net: NetName=5V Pin=C_5V_BBB-1
+Removed Pin From Net: NetName=5V Pin=C_5V_Chassi-1
+Removed Pin From Net: NetName=5V Pin=C_5V_Garra-1
+Removed Pin From Net: NetName=12V Pin=C_12V_BBB-1
+Removed Pin From Net: NetName=NetC1_1 Pin=ChaveGeral-1
+Removed Pin From Net: NetName=12V Pin=ChaveGeral-2
+Removed Member From Class: ClassName=schChaves Member=ChaveGeral
+Change Component Footprint: Designator=D1 Old Footprint=2-vias New Footprint=3.2X1.6X1.1
+Change Component Footprint: Designator=D2 Old Footprint=2-vias New Footprint=3.2X1.6X1.1
+Change Component Footprint: Designator=D3 Old Footprint=2-vias New Footprint=3.2X1.6X1.1
+Change Component Footprint: Designator=D4 Old Footprint=2-vias New Footprint=3.2X1.6X1.1
+Change Component Footprint: Designator=D6 Old Footprint=2-vias New Footprint=3.2X1.6X1.1
+Change Component Footprint: Designator=D7 Old Footprint=2-vias New Footprint=3.2X1.6X1.1
+Change Component Footprint: Designator=D8 Old Footprint=2-vias New Footprint=3.2X1.6X1.1
+Change Component Footprint: Designator=F1 Old Footprint=Fusivel New Footprint=PIN-W2/E2.8
+Change Component Footprint: Designator=F2 Old Footprint=Fusivel New Footprint=PIN-W2/E2.8
+Change Component Footprint: Designator=F3 Old Footprint=Fusivel New Footprint=PIN-W2/E2.8
+Change Component Footprint: Designator=F4 Old Footprint=Fusivel New Footprint=PIN-W2/E2.8
+Change Component Footprint: Designator=F6 Old Footprint=Fusivel New Footprint=PIN-W2/E2.8
+Change Component Footprint: Designator=F7 Old Footprint=Fusivel New Footprint=PIN-W2/E2.8
+Change Component Footprint: Designator=F8 Old Footprint=Fusivel New Footprint=PIN-W2/E2.8
+Change Component Footprint: Designator=C1 Old Footprint=RAD-0.2 New Footprint=CAPR5-4X5
+Change Component Footprint: Designator=C3 Old Footprint=RAD-0.2 New Footprint=CAPR5-4X5
+Change Component Footprint: Designator=C5 Old Footprint=RAD-0.2 New Footprint=CAPR5-4X5
+Change Component Comment : Designator=R3 Old Comment=D3 New Comment=Res1
+Added Component: Designator=Chave(JACK J4)
+Add component. Clean all parameters for all variants
+Added Pin To Net: NetName=GND Pin=Bateria1-3
+Added Pin To Net: NetName=GND Pin=Bateria2-3
+Added Pin To Net: NetName=NetC1_1 Pin=Chave-1
+Added Pin To Net: NetName=12V Pin=Chave-2
+Added Pin To Net: NetName=12V Pin=Chave-3
+Added Pin To Net: NetName=GND Pin=goto5V-3
+Added Pin To Net: NetName=GND Pin=in3.3-3
+Added Pin To Net: NetName=GND Pin=in5V-3
+Added Pin To Net: NetName=GND Pin=J_5V_BBB-3
+Added Pin To Net: NetName=GND Pin=J_5V_Garra-3
+Added Pin To Net: NetName=GND Pin=J_12V_BBB-3
+Added Pin To Net: NetName=GND Pin=J_12V_Garra-3
+Change Net Name : Old Net Name=3.3V New Net Name=NetC3_1
+Added Pin To Net: NetName=NetC_3.3V_Chassi_N.F Pin=C_3.3V_Chassi-3
+Added Pin To Net: NetName=NetC_3.3V_Chassi_N.F Pin=F4-2
+Added Net: Name=NetC_3.3V_Chassi_N.F
+Added Pin To Net: NetName=NetC_5V_BBB_N.F Pin=C_5V_BBB-3
+Added Pin To Net: NetName=NetC_5V_BBB_N.F Pin=F6-2
+Added Net: Name=NetC_5V_BBB_N.F
+Added Pin To Net: NetName=NetC_5V_Chassi_N.F Pin=C_5V_Chassi-3
+Added Pin To Net: NetName=NetC_5V_Chassi_N.F Pin=F7-1
+Added Net: Name=NetC_5V_Chassi_N.F
+Added Pin To Net: NetName=NetC_5V_Garra_N.F Pin=C_5V_Garra-3
+Added Pin To Net: NetName=NetC_5V_Garra_N.F Pin=F8-2
+Added Net: Name=NetC_5V_Garra_N.F
+Added Pin To Net: NetName=NetC_12V_BBB_N.F Pin=C_12V_BBB-3
+Added Pin To Net: NetName=NetC_12V_BBB_N.F Pin=F3-2
+Added Net: Name=NetC_12V_BBB_N.F
+Added Pin To Net: NetName=NetC_12V_Garra_N.F Pin=C_12V_Garra-3
+Added Pin To Net: NetName=NetC_12V_Garra_N.F Pin=F2-2
+Added Net: Name=NetC_12V_Garra_N.F
+Added Member To Class: ClassName=schChaves Member=Component Chave Jack
+Added Member To Class: ClassName=schChaves Member=Component in5V Jack
+Added Room: Name=schChaves
