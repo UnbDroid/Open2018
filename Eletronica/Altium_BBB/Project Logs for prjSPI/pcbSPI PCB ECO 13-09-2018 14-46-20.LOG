@@ -1,0 +1,4 @@
+Added Pin To Net: NetName=NetConv_3V_4 Pin=Conv_3V-4
+Added Pin To Net: NetName=NetConv_3V_4 Pin=SP2_1-2
+Added Net: Name=NetConv_3V_4
+Added Room: Name=schSPI
