@@ -55,7 +55,7 @@ GenerateClassCluster=0
 DocumentUniqueId=PYBYUBKV
 
 [Document2]
-DocumentPath=print.OutJob
+DocumentPath=print_fotolitica.OutJob
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -121,6 +121,23 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=KEOIFXEH
+
+[Document6]
+DocumentPath=print_ferro.OutJob
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
 
 [Configuration1]
 Name=Sources
@@ -241,7 +258,7 @@ OutputDefault20=0
 [OutputGroup2]
 Name=Simulator Outputs
 Description=
-TargetPrinter=Hewlett-Packard LaserJet P4014
+TargetPrinter=Microsoft Print to PDF
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
 
 [OutputGroup3]
@@ -836,11 +853,6 @@ Type108=1
 Type109=1
 Type110=1
 Type111=1
-Type112=1
-Type113=1
-Type114=1
-Type115=1
-Type116=1
 
 [Difference Levels]
 Type1=1
@@ -905,9 +917,6 @@ Type59=1
 Type60=1
 Type61=1
 Type62=1
-Type63=1
-Type64=1
-Type65=1
 
 [Electrical Rules Check]
 Type1=1
@@ -1031,7 +1040,6 @@ Type118=3
 Type119=3
 MultiChannelAlternate=2
 AlternateItemFail=3
-Type122=2
 
 [ERC Connection Matrix]
 L1=NNNNNNNNNNNWNNNWW
@@ -1301,10 +1309,10 @@ ComponentUpdate5=1
 ComponentIsDeviceSheet5=0
 
 [NetInfos]
-Net1=NetName=GND|NetColor=$00FF6E6E
+Net1=NetName=Vin|NetColor=$006E6EFF
 Net2=NetName=5V|NetColor=clYellow
 Net3=NetName=GND_MOT|NetColor=$006EFF6E
-Net4=NetName=Vin|NetColor=$006E6EFF
+Net4=NetName=GND|NetColor=$00FF6E6E
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=-1|Confirm=-1|UseName=-1|InclAllRules=0
