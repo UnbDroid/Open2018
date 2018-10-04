@@ -1,0 +1,169 @@
+Lista de cabos
+
+Legenda:
+    azul -> sinal1 
+    verde -> sinal2
+
+    laranja -> clock
+
+    vermelho -> alimentação positiva(12V,7.4V,5V,3.3V)
+    preto -> alimentação negativa (GND)
+    branco -> fio sem utilização
+
+    RJ45 -> codigo de cor 568A
+
+
+Placas:
+
+    Chaves:
+        JACK(Todas as placas principais)
+            | 10 unidades    
+            |padrão: 5V -> vermelho; GND -> preto
+            |Tamanho: #VARIADOS, DEPENDE DA LOCALIZAÇÃO DAS PLACAS NO ROBO
+        
+        KK3(MOLEX femea)(Alimentação/Chaves)
+            | 1 unidade 
+            |padrão:direita-> fio preto; meio -> fio vermelho; esquerda ->fio vermelho
+            |Tamanho: 200 mm
+
+    Placa SOM:
+        KK3(MOLEX femea)(GPIO3)
+            | 1 unidade 
+            |padrão:direita-> fio preto; meio -> fio vermelho; esquerda ->fio azul
+            |Tamanho: 150 mm
+            |Saída: JST-SH Se junta com GPIO4(Checar: https://github.com/beagleboard/beaglebone-blue/blob/master/BeagleBone_Blue_sch.pdf)
+
+        KK3(MOLEX femea)(GPIO4)
+            | 1 unidade
+            |padrão:direita-> fio azul; meio -> fio azul; esquerda ->fio azul
+            |Tamanho: 150 mm
+            |Saída: JST-SH Se junta com GPIO3(Checar: https://github.com/beagleboard/beaglebone-blue/blob/master/BeagleBone_Blue_sch.pdf)
+
+    BBB:
+
+        KK3(MOLEX femea)(GPIO1)
+            | 1 unidade 
+            |padrão:direita-> fio preto; meio -> fio vermelho; esquerda ->fio azul
+            |Tamanho: 30 mm
+            |Saída: JST-SH Se junta com GPIO2(Checar: https://github.com/beagleboard/beaglebone-blue/blob/master/BeagleBone_Blue_sch.pdf)
+
+        KK3(MOLEX femea)(GPIO2)
+            | 1 unidade
+            |padrão:direita-> fio azul; meio -> fio azul; esquerda ->fio azul
+            |Tamanho: 30 mm
+            |Saída: JST-SH Se junta com GPIO1(Checar: https://github.com/beagleboard/beaglebone-blue/blob/master/BeagleBone_Blue_sch.pdf)
+
+        KK4(MOLEX femea)(StepMotor)
+            | 1 unidade
+            |padrão: 1-> fio azul; 2 -> fio azul; 3 ->fio verde; 4 -> fio verde
+            |Tamanho: 40 mm
+            |Saída: Entrada do motor de passo
+
+    Encoders:
+        RJ45(Placa Garra)
+            | 1 unidade 
+            |padrão: 568A
+            |Tamanho: 40 mm
+
+        KK4(MOLEX femea)(Encoders)
+            | 4 unidade
+            |padrão: 1-> fio branco; 2 -> fio branco; 3 ->fio azul; 4 -> fio verde
+            |Tamanho: 40 mm 
+            |Saída: JST-SH (Checar: https://github.com/beagleboard/beaglebone-blue/blob/master/BeagleBone_Blue_sch.pdf)
+             
+
+
+    Motores:   
+        KK2(MOLEX femea)(In Mot)
+            | 4 unidades
+            |padrão: direita-> fio vermelho; esquerda ->fio preto
+            |Tamanho: 45 mm
+        KK2(MOLEX femea)(OUT Mot)
+            | 4 unidades
+            |padrão: direita-> fio vermelho; esquerda ->fio preto
+            |Tamanho: 300 mm
+
+    SPI:
+        RJ45(Placa Garra)
+            | 1 unidade 
+            |padrão: 568A
+            |Tamanho: 500 mm
+        RJ45(Placa Chassi)
+            | 1 unidade    
+            |padrão: 568A
+            |Tamanho: 45 mm
+        KK3(MOLEX femea)(Servo)
+            | 4 unidades 
+            |padrão: fio do meio verde com sinal, fio da direita e esquerda brancos
+            |Tamanho: 500 mm
+
+
+        KK3(MOLEX femea)(SPI1_1)
+            | 1 unidade 
+            |padrão:direita-> fio preto; meio -> fio branco; esquerda ->fio verde
+            |Tamanho: 30 mm
+            |Saída: Se junta com (SPI1_2) num JST-HS pra conectar com beaglebone(Checar: https://github.com/beagleboard/beaglebone-blue/blob/master/BeagleBone_Blue_sch.pdf)
+        KK3(MOLEX femea)(SPI1_2)
+            | 1 unidade 
+            |padrão:direita-> fio verde; meio -> fio laranja; esquerda ->fio verde
+            |Tamanho: 30 mm
+            |Saída: Se junta com (SPI1_1) num JST-HS pra conectar com beaglebone(Checar: https://github.com/beagleboard/beaglebone-blue/blob/master/BeagleBone_Blue_sch.pdf)
+     
+
+        KK3(MOLEX femea)(SPI2_1)
+            | 1 unidade 
+            |padrão:direita-> fio preto; meio -> fio branco; esquerda ->fio verde
+            |Tamanho: 30 mm
+            |Saída: Se junta com (SPI2_2) num JST-HS pra conectar com beaglebone(Checar: https://github.com/beagleboard/beaglebone-blue/blob/master/BeagleBone_Blue_sch.pdf)
+        KK3(MOLEX femea)(SPI2_2)
+            | 1 unidade 
+            |padrão:direita-> fio verde; meio -> fio laranja; esquerda ->fio verde
+            |Tamanho: 30 mm
+            |Saída: Se junta com (SPI2_1) num JST-HS pra conectar com beaglebone(Checar: https://github.com/beagleboard/beaglebone-blue/blob/master/BeagleBone_Blue_sch.pdf)
+     
+
+    Chassi:
+        RJ45(Placa Sensores)
+            | 6 unidades 
+            |padrão: 568A
+            |Tamanho: 40 mm
+
+        RJ45(Placa BBB)#Encoders + (servos + SPI)
+            | 2 unidades 
+            |padrão: 568A
+            |Tamanho: 40 mm
+
+        KK4(MOLEX femea)(Encoders)
+            | 4 unidade
+            |padrão: 1-> fio branco; 2 -> fio branco; 3 ->fio azul; 4 -> fio verde
+            |Tamanho: 45 mm
+        
+        KK3(MOLEX femea)(Servo)
+            | 1 unidade 
+            |padrão:direita-> fio preto #VERIFICAR; meio -> fio verde #VERIFICAR; esquerda ->fio vermelho #VERIFICAR
+            |Tamanho: 45 mm
+        
+        
+    Garra:
+    
+        KK4(MOLEX femea)(Encoders)
+            | 1 unidade
+            |padrão: 1-> fio branco; 2 -> fio branco; 3 ->fio azul; 4 -> fio verde
+            |Tamanho: 500 mm
+        
+        RJ45(Placa BBB)
+            | 1 unidade 
+            |padrão: 568A
+            |Tamanho: 500 mm
+
+        RJ45(Placa TCS3200)
+            | 1 unidade 
+            |padrão: 568A
+            |Tamanho: 400 mm
+            |Saída: 2 modul femea de 4 pinos
+
+
+    
+
+
+    Placa RASP->BBB:

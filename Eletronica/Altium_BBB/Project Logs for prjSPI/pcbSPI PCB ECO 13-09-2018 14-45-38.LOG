@@ -1,0 +1,4 @@
+Added Pin To Net: NetName=NetSP1_1_2 Pin=SP1_1-2
+Added Pin To Net: NetName=NetSP1_1_2 Pin=SP2_1-2
+Added Net: Name=NetSP1_1_2
+Added Room: Name=schSPI

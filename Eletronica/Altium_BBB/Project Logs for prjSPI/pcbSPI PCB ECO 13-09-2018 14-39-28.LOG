@@ -1,0 +1,8 @@
+Removed Pin From Net: NetName=NetC2_1 Pin=Conv_3V-2
+Removed Pin From Net: NetName=NetC2_1 Pin=SP1_2-1
+Change Net Name : Old Net Name=NetC2_1 New Net Name=GND
+Added Pin To Net: NetName=MISO_1 Pin=Conv_3V-2
+Added Pin To Net: NetName=MISO_1 Pin=SP1_2-1
+Added Net: Name=MISO_1
+Change Class Name : Old Net Name=schBeagleBone New Net Name=schSPI
+Added Room: Name=schSPI

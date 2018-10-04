@@ -1,0 +1,18 @@
+Added Pin To Net: NetName=5V Pin=K1-1
+Added Pin To Net: NetName=D7 Pin=K1-2
+Added Pin To Net: NetName=5V Pin=K2-1
+Added Pin To Net: NetName=D8 Pin=K2-2
+Added Pin To Net: NetName=5V Pin=K3-1
+Added Pin To Net: NetName=D9 Pin=K3-2
+Added Pin To Net: NetName=D7 Pin=R3-1
+Added Pin To Net: NetName=GND Pin=R3-2
+Added Pin To Net: NetName=D8 Pin=R4-1
+Added Pin To Net: NetName=GND Pin=R4-2
+Added Pin To Net: NetName=D9 Pin=R5-1
+Added Pin To Net: NetName=GND Pin=R5-2
+Added Member To Class: ClassName=schGarra Member=Component K1 KK2 - FDC
+Added Member To Class: ClassName=schGarra Member=Component K2 KK2 - FDC
+Added Member To Class: ClassName=schGarra Member=Component K3 KK2 - FDC
+Added Member To Class: ClassName=schGarra Member=Component R3 Res1
+Added Member To Class: ClassName=schGarra Member=Component R4 Res1
+Added Member To Class: ClassName=schGarra Member=Component R5 Res1

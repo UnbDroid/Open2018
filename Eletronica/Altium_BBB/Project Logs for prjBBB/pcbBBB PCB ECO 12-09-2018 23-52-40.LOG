@@ -1,0 +1,253 @@
+Added Component: Designator=C1(RAD-0.3)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "LatestRevisionDate"; Value = "17-Jul-2002"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "LatestRevisionNote"; Value = "Re-released for DXP Platform."; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "PackageDescription"; Value = "Radial Cap, Thru-Hole; 2 Leads; 0.3 in Pin Spacing"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "PackageReference"; Value = "RAD-0.3"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Published"; Value = "8-Jun-2000"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Publisher"; Value = "Altium Limited"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100pF"; VariantName = "[No Variations]"
+Added Component: Designator=C2(RAD-0.3)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "LatestRevisionDate"; Value = "17-Jul-2002"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "LatestRevisionNote"; Value = "Re-released for DXP Platform."; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "PackageDescription"; Value = "Radial Cap, Thru-Hole; 2 Leads; 0.3 in Pin Spacing"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "PackageReference"; Value = "RAD-0.3"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Published"; Value = "8-Jun-2000"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Publisher"; Value = "Altium Limited"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100pF"; VariantName = "[No Variations]"
+Added Component: Designator=Conv_3V(4-vias)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Fabricante"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.molex.com/molex/products/family?key=kk_254_rpc_connector_system&channel=products&chanName=family&pageTitle=Introduction&parentKey=kk_interconnect_solutions"; VariantName = "[No Variations]"
+Added Component: Designator=Conv_5V(4-vias)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Fabricante"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.molex.com/molex/products/family?key=kk_254_rpc_connector_system&channel=products&chanName=family&pageTitle=Introduction&parentKey=kk_interconnect_solutions"; VariantName = "[No Variations]"
+Added Component: Designator=Driver1(A4988)
+Add component. Clean all parameters for all variants
+Added Component: Designator=Encoder1(4-vias)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Fabricante"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.molex.com/molex/products/family?key=kk_254_rpc_connector_system&channel=products&chanName=family&pageTitle=Introduction&parentKey=kk_interconnect_solutions"; VariantName = "[No Variations]"
+Added Component: Designator=Encoder2(4-vias)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Fabricante"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.molex.com/molex/products/family?key=kk_254_rpc_connector_system&channel=products&chanName=family&pageTitle=Introduction&parentKey=kk_interconnect_solutions"; VariantName = "[No Variations]"
+Added Component: Designator=Encoder3(4-vias)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Fabricante"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.molex.com/molex/products/family?key=kk_254_rpc_connector_system&channel=products&chanName=family&pageTitle=Introduction&parentKey=kk_interconnect_solutions"; VariantName = "[No Variations]"
+Added Component: Designator=Encoder4(4-vias)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Fabricante"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.molex.com/molex/products/family?key=kk_254_rpc_connector_system&channel=products&chanName=family&pageTitle=Introduction&parentKey=kk_interconnect_solutions"; VariantName = "[No Variations]"
+Added Component: Designator=EN(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=GP0_1(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=GP0_2(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=in_5V(JACK J4)
+Add component. Clean all parameters for all variants
+Added Component: Designator=in_12V(JACK J4)
+Add component. Clean all parameters for all variants
+Added Component: Designator=In_Mot_1(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=In_Mot_2(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=In_Mot_3(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=In_Mot_4(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=MS1(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=MS2(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=MS3(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=Out_Mot_1(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=Out_Mot_2(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=Out_Mot_3(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=Out_Mot_4(2-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=RJ_Chassi_1(RJ45_90)
+Add component. Clean all parameters for all variants
+Added Component: Designator=RJ_Chassi_2(RJ45_90)
+Add component. Clean all parameters for all variants
+Added Component: Designator=RJ_Garra(RJ45_Simples)
+Add component. Clean all parameters for all variants
+Added Component: Designator=Servo1(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=Servo2(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=Servo3(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=Servo4(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=SP1_1(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=SP1_2(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=SP2_1(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=SP2_2(3-vias)
+Add component. Clean all parameters for all variants
+Added Component: Designator=StepMot(4-vias)
+Add component. Clean all parameters for all variants
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Fabricante"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.molex.com/molex/products/family?key=kk_254_rpc_connector_system&channel=products&chanName=family&pageTitle=Introduction&parentKey=kk_interconnect_solutions"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=C1-1
+Added Pin To Net: NetName=12V Pin=C1-2
+Added Pin To Net: NetName=MISO_2 Pin=Conv_3V-3
+Added Pin To Net: NetName=MS1 Pin=Driver1-1
+Added Pin To Net: NetName=MS2 Pin=Driver1-2
+Added Pin To Net: NetName=MS3 Pin=Driver1-3
+Added Pin To Net: NetName=RST Pin=Driver1-4
+Added Pin To Net: NetName=SLP Pin=Driver1-5
+Added Pin To Net: NetName=STP Pin=Driver1-6
+Added Pin To Net: NetName=DIR Pin=Driver1-7
+Added Pin To Net: NetName=12V Pin=Driver1-8
+Added Pin To Net: NetName=GND Pin=Driver1-9
+Added Pin To Net: NetName=2B Pin=Driver1-10
+Added Pin To Net: NetName=2A Pin=Driver1-11
+Added Pin To Net: NetName=1A Pin=Driver1-12
+Added Pin To Net: NetName=1B Pin=Driver1-13
+Added Pin To Net: NetName=3.3v Pin=Driver1-14
+Added Pin To Net: NetName=GND Pin=Driver1-15
+Added Pin To Net: NetName=EN Pin=Driver1-16
+Added Pin To Net: NetName=EN Pin=EN-1
+Added Pin To Net: NetName=3.3v Pin=EN-2
+Added Pin To Net: NetName=ChA_3 Pin=Encoder1-3
+Added Pin To Net: NetName=ChB_3 Pin=Encoder1-4
+Added Pin To Net: NetName=ChA_2 Pin=Encoder2-3
+Added Pin To Net: NetName=ChB_2 Pin=Encoder2-4
+Added Pin To Net: NetName=ChA_4 Pin=Encoder3-3
+Added Pin To Net: NetName=ChB_4 Pin=Encoder3-4
+Added Pin To Net: NetName=ChA_1 Pin=Encoder4-3
+Added Pin To Net: NetName=ChB_1 Pin=Encoder4-4
+Added Pin To Net: NetName=GND Pin=GP0_1-1
+Added Pin To Net: NetName=3.3v Pin=GP0_1-2
+Added Pin To Net: NetName=RST Pin=GP0_1-3
+Added Pin To Net: NetName=SLP Pin=GP0_2-1
+Added Pin To Net: NetName=STP Pin=GP0_2-2
+Added Pin To Net: NetName=DIR Pin=GP0_2-3
+Added Pin To Net: NetName=12V Pin=in_12V-1
+Added Pin To Net: NetName=GND Pin=in_12V-2
+Added Pin To Net: NetName=MotA_1 Pin=In_Mot_1-1
+Added Pin To Net: NetName=MotA_2 Pin=In_Mot_1-2
+Added Pin To Net: NetName=MotB_1 Pin=In_Mot_2-1
+Added Pin To Net: NetName=MotB_2 Pin=In_Mot_2-2
+Added Pin To Net: NetName=MotC_1 Pin=In_Mot_3-1
+Added Pin To Net: NetName=MotC_2 Pin=In_Mot_3-2
+Added Pin To Net: NetName=MotD_1 Pin=In_Mot_4-1
+Added Pin To Net: NetName=MotD_2 Pin=In_Mot_4-2
+Added Pin To Net: NetName=MS1 Pin=MS1-1
+Added Pin To Net: NetName=3.3v Pin=MS1-2
+Added Pin To Net: NetName=MS2 Pin=MS2-1
+Added Pin To Net: NetName=3.3v Pin=MS2-2
+Added Pin To Net: NetName=MS3 Pin=MS3-1
+Added Pin To Net: NetName=3.3v Pin=MS3-2
+Added Pin To Net: NetName=MotA_2 Pin=Out_Mot_1-1
+Added Pin To Net: NetName=MotA_1 Pin=Out_Mot_1-2
+Added Pin To Net: NetName=MotB_2 Pin=Out_Mot_2-1
+Added Pin To Net: NetName=MotB_1 Pin=Out_Mot_2-2
+Added Pin To Net: NetName=MotC_2 Pin=Out_Mot_3-1
+Added Pin To Net: NetName=MotC_1 Pin=Out_Mot_3-2
+Added Pin To Net: NetName=MotD_2 Pin=Out_Mot_4-1
+Added Pin To Net: NetName=MotD_1 Pin=Out_Mot_4-2
+Added Pin To Net: NetName=ChA_1 Pin=RJ_Chassi_1-1
+Added Pin To Net: NetName=ChB_4 Pin=RJ_Chassi_1-2
+Added Pin To Net: NetName=ChB_1 Pin=RJ_Chassi_1-3
+Added Pin To Net: NetName=ChA_4 Pin=RJ_Chassi_1-4
+Added Pin To Net: NetName=ChA_2 Pin=RJ_Chassi_1-5
+Added Pin To Net: NetName=ChB_3 Pin=RJ_Chassi_1-6
+Added Pin To Net: NetName=ChB_2 Pin=RJ_Chassi_1-7
+Added Pin To Net: NetName=ChA_3 Pin=RJ_Chassi_1-8
+Added Pin To Net: NetName=Servo4 Pin=RJ_Chassi_2-1
+Added Pin To Net: NetName=Servo3 Pin=RJ_Chassi_2-2
+Added Pin To Net: NetName=Servo2 Pin=RJ_Chassi_2-3
+Added Pin To Net: NetName=Servo1 Pin=RJ_Chassi_2-4
+Added Pin To Net: NetName=CLK_2 Pin=RJ_Chassi_2-6
+Added Pin To Net: NetName=MOSI_2 Pin=RJ_Chassi_2-7
+Added Pin To Net: NetName=SS_2 Pin=RJ_Chassi_2-8
+Added Pin To Net: NetName=CLK_1 Pin=RJ_Garra-2
+Added Pin To Net: NetName=SS_1 Pin=RJ_Garra-4
+Added Pin To Net: NetName=MOSI_1 Pin=RJ_Garra-6
+Added Pin To Net: NetName=Servo1 Pin=Servo1-2
+Added Pin To Net: NetName=Servo2 Pin=Servo2-2
+Added Pin To Net: NetName=Servo3 Pin=Servo3-2
+Added Pin To Net: NetName=Servo4 Pin=Servo4-2
+Added Pin To Net: NetName=MOSI_1 Pin=SP1_1-3
+Added Pin To Net: NetName=CLK_1 Pin=SP1_2-2
+Added Pin To Net: NetName=SS_1 Pin=SP1_2-3
+Added Pin To Net: NetName=MOSI_2 Pin=SP2_1-3
+Added Pin To Net: NetName=MISO_2 Pin=SP2_2-1
+Added Pin To Net: NetName=CLK_2 Pin=SP2_2-2
+Added Pin To Net: NetName=SS_2 Pin=SP2_2-3
+Added Pin To Net: NetName=2B Pin=StepMot-1
+Added Pin To Net: NetName=2A Pin=StepMot-2
+Added Pin To Net: NetName=1A Pin=StepMot-3
+Added Pin To Net: NetName=1B Pin=StepMot-4
+Added Pin To Net: NetName=5V Pin=C2-2
+Added Pin To Net: NetName=5V Pin=Conv_5V-1
+Added Pin To Net: NetName=5V Pin=in_5V-1
+Added Net: Name=5V
+Added Pin To Net: NetName=NetC2_1 Pin=C2-1
+Added Pin To Net: NetName=NetC2_1 Pin=Conv_3V-1
+Added Pin To Net: NetName=NetC2_1 Pin=Conv_3V-2
+Added Pin To Net: NetName=NetC2_1 Pin=Conv_5V-4
+Added Pin To Net: NetName=NetC2_1 Pin=in_5V-2
+Added Pin To Net: NetName=NetC2_1 Pin=SP1_1-1
+Added Pin To Net: NetName=NetC2_1 Pin=SP1_2-1
+Added Net: Name=NetC2_1
+Added Pin To Net: NetName=NetConv_3V_4 Pin=Conv_3V-4
+Added Pin To Net: NetName=NetConv_3V_4 Pin=SP1_1-2
+Added Net: Name=NetConv_3V_4
+Added Pin To Net: NetName=NetConv_5V_2 Pin=Conv_5V-2
+Added Pin To Net: NetName=NetConv_5V_2 Pin=RJ_Chassi_2-5
+Added Net: Name=NetConv_5V_2
+Added Pin To Net: NetName=NetConv_5V_3 Pin=Conv_5V-3
+Added Pin To Net: NetName=NetConv_5V_3 Pin=RJ_Garra-8
+Added Net: Name=NetConv_5V_3
+Added Member To Class: ClassName=schBeagleBone Member=Component C1 Cap
+Added Member To Class: ClassName=schBeagleBone Member=Component C2 Cap
+Added Member To Class: ClassName=schBeagleBone Member=Component Conv_3V KK4
+Added Member To Class: ClassName=schBeagleBone Member=Component Conv_5V KK4
+Added Member To Class: ClassName=schBeagleBone Member=Component Driver1 A4988
+Added Member To Class: ClassName=schBeagleBone Member=Component Encoder1 KK4
+Added Member To Class: ClassName=schBeagleBone Member=Component Encoder2 KK4
+Added Member To Class: ClassName=schBeagleBone Member=Component Encoder3 KK4
+Added Member To Class: ClassName=schBeagleBone Member=Component Encoder4 KK4
+Added Member To Class: ClassName=schBeagleBone Member=Component EN KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component GP0_1 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component GP0_2 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component in_5V Jack
+Added Member To Class: ClassName=schBeagleBone Member=Component in_12V Jack
+Added Member To Class: ClassName=schBeagleBone Member=Component In_Mot_1 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component In_Mot_2 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component In_Mot_3 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component In_Mot_4 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component MS1 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component MS2 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component MS3 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component Out_Mot_1 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component Out_Mot_2 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component Out_Mot_3 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component Out_Mot_4 KK2
+Added Member To Class: ClassName=schBeagleBone Member=Component RJ_Chassi_1 RJ45
+Added Member To Class: ClassName=schBeagleBone Member=Component RJ_Chassi_2 RJ45
+Added Member To Class: ClassName=schBeagleBone Member=Component RJ_Garra RJ45
+Added Member To Class: ClassName=schBeagleBone Member=Component Servo1 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component Servo2 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component Servo3 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component Servo4 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component SP1_1 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component SP1_2 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component SP2_1 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component SP2_2 KK3
+Added Member To Class: ClassName=schBeagleBone Member=Component StepMot KK4
+Added Room: Name=schBeagleBone

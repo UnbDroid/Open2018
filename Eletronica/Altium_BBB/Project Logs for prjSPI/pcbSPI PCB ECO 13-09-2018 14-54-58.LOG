@@ -1,0 +1,3 @@
+Change Physical Footprint: Designator=Conv_3V Old Footprint=4-vias New Footprint=4-vias
+Change Physical Footprint: Designator=Conv_5V Old Footprint=4-vias New Footprint=4-vias
+Change Physical Footprint: Designator=in_5V Old Footprint=JACK J4 New Footprint=JACK J4

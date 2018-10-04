@@ -1,0 +1,4 @@
+Added Component: Designator=A(BBB)
+Add component. Clean all parameters for all variants
+Added Member To Class: ClassName=schBeagleBone Member=Component A BeagleBoneBlue
+Added Room: Name=schBeagleBone

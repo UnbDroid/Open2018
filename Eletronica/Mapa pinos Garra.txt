@@ -1,0 +1,22 @@
+    BBB - Drive motor que gira a base da garra
+--------------------------------------------------
+GPIO1_25 - Reset
+GPIO1_17 - Sleep
+GPIO3_20 - Step
+GPIO3_17 - Dir
+--------------------------------------------------
+
+Arduino NANO - Drive motores como movimento linear
+--------------------------------------------------
+pino D2 - Dir Drive 1
+pino D3 - Steep Drive 1
+pino D4 - Reset ambos
+pino A6 - Dir Drive 2
+pino A7 - Dir Drive 2
+--------------------------------------------------
+
+		Eletroimas
+--------------------------------------------------
+pino D5
+pino D6
+--------------------------------------------------
