@@ -280,20 +280,35 @@ void Driver::send_pulses(int steps){
 	// Make sure step is initially low	
 	digitalWrite(this->_STP, LOW);
 	
-	delayMicroseconds((this->_period)/2);	// Wait before rising STP output again	
+	if(this->_period > 10000){
+		delay((unsigned int)this->_period/2000);
 		
-	int i;
-	for(i=0;i<steps;i++){
-		digitalWrite(this->_STP, HIGH);
-		delayMicroseconds((this->_period)/2);
-		digitalWrite(this->_STP, LOW);
-		delayMicroseconds((this->_period)/2);
+		int i;
+		
+		for(i=0;i<steps;i++){
+			digitalWrite(this->_STP, HIGH);
+			delay((unsigned int)(this->_period)/2000);
+			digitalWrite(this->_STP, LOW);
+			delay((unsigned int)(this->_period)/2000);
+		}
+	}
+	else{
+		delayMicroseconds((unsigned int)(this->_period)/2);	// Wait before rising STP output again		
+		
+		int i;
+		
+		for(i=0;i<steps;i++){
+			digitalWrite(this->_STP, HIGH);
+			delayMicroseconds((unsigned int)(this->_period)/2);
+			digitalWrite(this->_STP, LOW);
+			delayMicroseconds((unsigned int)(this->_period)/2);
+		};
 	};
 }
 
-void Driver::set_speed(long int SPS){		// Speed input as Steps Per Second
+void Driver::set_speed(float SPS){		// Speed input as Steps Per Second
 	// It is important to note that if the motor does not work as expected the problem could be with the motor, and not the driver
-	this->_period = 1000000 / SPS;		//	(microseconds/second) / (steps/second) = (microseconds/steps)
+	this->_period = (float)1000000/SPS;		//	(microseconds/second) / (steps/second) = (microseconds/steps)
 	
 	if(this->_type){		// If A4988
 		if(this->_period < 3){
@@ -307,7 +322,7 @@ void Driver::set_speed(long int SPS){		// Speed input as Steps Per Second
 	};
 }
 
-long int Driver::show_period(){
+float Driver::show_period(){
 	return this->_period;
 }
 
@@ -348,7 +363,7 @@ int Driver::calculate_pulses(float orig, float dest){
 	return ((dest-orig)/(this->_diameter/2)*(180/3.1415926535))/this->_resolution; 	
 }
 
-void Driver::move(char mov, int dist=0){
+void Driver::move(char mov='r', float dist=0.0){
 	int n_pulses = 0;
 	
 	if(mov == 'a'){
@@ -373,6 +388,88 @@ void Driver::move(char mov, int dist=0){
 	this->send_pulses(n_pulses);	
 }
 
-int teste(){
-	return 1;
+void move_together(Driver &drv_1, float dist_1, Driver &drv_2, float dist_2, char mov='r'){
+	// Check if both motors STEP pins are valid and output enabled
+	// If only one is enabled, send only one to move
+	
+	if(!is_set(drv_1._STP) || !output_enabled(drv_1._STP) || !is_set(drv_2._STP) || !output_enabled(drv_2._STP)){
+		if(is_set(drv_1._STP) && output_enabled(drv_1._STP))
+			drv_1.move(mov, dist_1);
+		else if(is_set(drv_2._STP) && output_enabled(drv_2._STP))	
+			drv_2.move(mov, dist_2);
+		else
+			return;
+	};
+
+	int pulses_1, pulses_2;
+	
+	// Relative or absolute movement
+	if(mov=='a'){
+		pulses_1 = drv_1.calculate_pulses(drv_1._pos, dist_1);
+		drv_1._pos = dist_1;
+		pulses_2 = drv_2.calculate_pulses(drv_2._pos, dist_2);
+		drv_2._pos = dist_2;
+	}
+	else {
+		pulses_1 = drv_1.calculate_pulses(0, dist_1);
+		drv_1._pos += dist_1;
+		pulses_2 = drv_2.calculate_pulses(0, dist_2);
+		drv_2._pos += dist_2;		
+	};
+	
+	if(pulses_1<0){
+		drv_1.set_direction(0);
+		pulses_1 = -pulses_1;
+	}
+	else {
+		drv_1.set_direction(1);
+	};
+	
+	if(pulses_2<0){
+		drv_2.set_direction(0);
+		pulses_2 = -pulses_2;
+	}
+	else {
+		drv_2.set_direction(1);
+	};
+	
+	// The next line might not even be necessary, but it does not hurt to be secure
+	delayMicroseconds(1);	// 200ns for A4988 and 650ns for DRV8825, for security reasons, use 1000ns
+	
+	// For the DRV8225, it would be best to actually wait 1.7 ms, if it just got out of SLEEP mode, this could be implemented later
+		
+	// IMPORTANT NOTE: IF THE PROGRAM DOES NOT BEHAVE AS EXPECTED, THE PROBLEM MIGHT BE THE USE OF 'unsigned long'
+	
+	// hp = half period
+	unsigned long hp_1 = drv_1._period / 2000, hp_2 = drv_2._period / 2000;
+	
+	bool step_1=1, step_2=1;
+	
+	// Make sure step is initially low	
+	digitalWrite(drv_1._STP, LOW);
+	digitalWrite(drv_2._STP, LOW);
+	unsigned long old_1 = millis();
+	unsigned long old_2 = old_1, time_1, time_2;
+	
+	// The maximum speed expected is 500 SPS, so the periods of both motor is over 2 milliseconds
+	// Using millis() because the periods can be different
+	
+	while(pulses_1 || pulses_2){
+		time_1 = millis();
+		time_2 = time_1;
+		if((time_1 - old_1 >= hp_1) && pulses_1){
+			digitalWrite(drv_1._STP, step_1);
+			if(step_1)
+				pulses_1--;
+			step_1 = !step_1;
+			old_1 = millis();
+		};
+		if((time_2 - old_2 >= hp_2) && pulses_2){
+			digitalWrite(drv_2._STP, step_2);
+			if(step_2)
+				pulses_2--;
+			step_2 = !step_2;
+			old_2 = millis();
+		};
+	};		
 }

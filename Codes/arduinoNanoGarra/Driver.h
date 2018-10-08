@@ -43,12 +43,13 @@ class Driver{
 		void set_direction(int);	// Set direction standard: (1 - Clockwise, 0 - CounterClockwise)
 		void set_resolution(int);	// Set resolution, (1-FULL, 2-HALF, 4-1/4 micro, 8-1/8 micro, 16-1/16 micro, 32-1/32(DRV8825))
 		void send_pulses(int);		// Send a single number of pulses for the driver
-		void set_speed(long int);	// Set speed in PPS (Pulses Per Second) or SPS (Steps Per Second), both are the same
-		long int show_period();		// Show period for debugging reasons
+		void set_speed(float);	// Set speed in PPS (Pulses Per Second) or SPS (Steps Per Second), both are the same
+		float show_period();		// Show period for debugging reasons
 		void set_axis(char);		// Set the axis that the driver will be responsible for controlling
 		void set_diameter(float);	// Set the diameter to calculate conversion of rotational to translational movement, milimeters
-		void move(char, int);		// Move the driver, absolute 'a' or relative 'r' values, order = (X, Y, Z, I, J, K), milimeters
+		void move(char, float);		// Move the driver, absolute 'a' or relative 'r' values, order = (X, Y, Z, I, J, K), milimeters
 		int calculate_pulses(float, float);		// Calculate number of pulses to make a certain movement, milimeters 
+		friend void move_together(Driver &, float, Driver &, float, char);
 	private:
 		uint8_t _type;		// Using 8 bits to represent driver, 0 for DRV8825, 1 for A4988
 		uint8_t _RST;		// RESET pin
@@ -59,13 +60,13 @@ class Driver{
 		uint8_t _M0;		// pin for setting resolution
 		uint8_t _M1;		// pin for setting resolution
 		uint8_t _M2;		// pin for setting resolution
-		long int _period;	// Time between steps, value in microseconds
+		float _period;	// Time between steps, value in microseconds
 		char _axis;			// Axis that the driver will be responsible for controlling
 		float _pos;			// Position that the driver holds
 		float _diameter;	// Outer diameter of what is connected to the stepper 
 		float _resolution;	// Angular resolution, in degrees, that the driver will cause the stepper to rotate per step
 };
 
-int teste();
+void move_together(Driver &, float, Driver &, float, char);
 
 #endif
