@@ -11,9 +11,9 @@ WFLAGS		:= -Wall -Wextra -Werror=float-equal -Wuninitialized -Wunused-variable -
 CFLAGS		:= -g -c -Wall
 LDFLAGS		:= -pthread -lm -lrt -l:librobotcontrol.so.1
 
-SOURCES		:= $(wildcard *.c)
-INCLUDES	:= $(wildcard *.h)
-OBJECTS		:= $(SOURCES:$%.c=$%.o)
+SOURCES		:= $(wildcard *.cpp)
+INCLUDES	:= $(wildcard *.hpp)
+OBJECTS		:= $(SOURCES:$%.cpp=$%.o)
 
 prefix		:= /usr/local
 RM		:= rm -f
@@ -32,7 +32,7 @@ $(TARGET): $(OBJECTS)
 
 
 # compiling command
-$(OBJECTS): %.o : %.c $(INCLUDES)
+$(OBJECTS): %.o : %.cpp $(INCLUDES)
 	@$(CC) $(CFLAGS) $(WFLAGS) $(DEBUGFLAG) $< -o $@
 	@echo "Compiled: $@"
 
