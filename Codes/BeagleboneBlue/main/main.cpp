@@ -33,7 +33,7 @@ using namespace std;
 
 #define SLAVE_MODE	SPI_SLAVE_MODE_AUTO
 #define BUS_MODE	SPI_MODE_0
-#define SPI_SPEED	5000
+#define SPI_SPEED	50000
 
 
 vector<char> SpiComm(int channel, vector<char> dado)
@@ -66,9 +66,14 @@ vector<char> SpiComm(int channel, vector<char> dado)
 
 int main () 
 {
-	vector<char> dados = {'2','3','4','5'};
+	//vector<char> dados = {'x','l'};
+	vector<char> dados = {'s'};
+	
 	vector<char> retorno = SpiComm(1,dados);
 	//cout << retorno<<endl;
+	//dados = {'y','f'};
+	//retorno = SpiComm(1,dados);
 	return 0;
 }
+
 
