@@ -21,14 +21,16 @@ extern "C" {
 
 using namespace std;
 
-
+/*---------definicoes dos sensores----------*/
 
 #define PI 3.14159265f
 
 // change these for your platform
 // on BB this is equivilant to RC_BB_SPI1_SS1
-#define BUS		1
-#define SLAVE		0
+
+
+/*-------------definicoes do SPI------------*/
+
 
 #define CANAL_CHASSIS 0
 #define CANAL_GARRA 1
@@ -38,8 +40,11 @@ using namespace std;
 
 #define SLAVE_MODE	SPI_SLAVE_MODE_AUTO
 #define BUS_MODE	SPI_MODE_0
-#define SPI_SPEED	2000
+#define SPI_SPEED	50000
+string SpiComm(int canal, char* dado, int tamanho_resposta);
 
+
+/*---------definicoes dos sensores----------*/
 
 #define QUANTIDADE_LDR 8
 #define QUANTIDADE_COR 4
@@ -49,24 +54,65 @@ using namespace std;
 vector<uint8_t> sensoresLDR(8);
 vector<uint8_t> sensoresCOR(4);
 
-
-string SpiComm(int canal, char* dado, int tamanho_resposta);
 void imprimeLeituras(int sensores);
 void lerSensoresChassis();
+
+/*---------definicoes signal handling----------*/
+static int running = 0;
+
+static void __signal_handler(__attribute__ ((unused)) int dummy);
+
+
+/*------------definicoes motores---------------*/
+#define MOTOR_FRENTE 1
+#define MOTOR_TRAS 2
+#define MOTOR_DIREITA 3
+#define MOTOR_ESQUERDA 4
+
+#define DIRECAO_LADO 1
+#define DIRECAO_SENSORES 2
+
+void inicializa();
 
 int main () 
 {
 	//vector<char> dados = {'x','l'};
 	//char* dados = "s";
+
+	inicializa();	
 	
 	string retorno = SpiComm(0,"s",16);
 	cout << retorno <<endl<<retorno.length()<<endl;
+	
 	lerSensoresChassis();
 	imprimeLeituras(SENSORES_LDR);
 	imprimeLeituras(SENSORES_COR);
+
+
+	while(running){
+		rc_usleep(500000);
+	}
+
 	return 0;
 }
 
+void inicializa()
+{
+	rc_motor_init_freq(RC_MOTOR_DEFAULT_PWM_FREQ);
+}
+
+void andaMotores(int direcao, int vel)
+{
+	if (direcao == DIRECAO_SENSORES)
+	{
+		rc_motor_set(MOTOR_DIREITA,vel);
+		rc_motor_set(MOTOR_ESQUERDA,vel);
+	}else if(direcao == DIRECAO_LADO)
+	{
+		rc_motor_set(MOTOR_FRENTE,vel);
+		rc_motor_set(MOTOR_TRAS,vel);
+	}
+}
 
 string SpiComm(int canal, char* dado, int tamanho_resposta)
 {
@@ -141,3 +187,8 @@ void imprimeLeituras(int sensores)
 	}
 }
 
+static void __signal_handler(__attribute__ ((unused)) int dummy)
+{
+	running=0;
+	return;
+}
