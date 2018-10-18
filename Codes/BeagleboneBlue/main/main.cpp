@@ -128,7 +128,7 @@ void andaDistancia(float dist, float pot,int eixo)
 		case X_POS:
 			cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
 			cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
-			andaMotores(DIRECAO_SENSORES,pot);
+			andaMotores(DIRECAO_SENSORES_X,pot);
 			while(!acabouDeAndar(cont_inicial_1,cont_inicial_2,dist))
 			{
 				cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
@@ -138,7 +138,7 @@ void andaDistancia(float dist, float pot,int eixo)
 		case X_NEG:
 			cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
 			cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
-			andaMotores(DIRECAO_SENSORES,-pot);
+			andaMotores(DIRECAO_SENSORES_X,-pot);
 			while(!acabouDeAndar(cont_inicial_1,cont_inicial_2,dist))
 			{
 				cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
@@ -149,7 +149,7 @@ void andaDistancia(float dist, float pot,int eixo)
 		case Y_POS:
 			cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
 			cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
-			andaMotores(DIRECAO_LADO,pot);
+			andaMotores(DIRECAO_LADO_Y,pot);
 			while(!acabouDeAndar(cont_inicial_1,cont_inicial_2,dist))
 			{
 				cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
@@ -159,7 +159,7 @@ void andaDistancia(float dist, float pot,int eixo)
 		case Y_NEG:
 			cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
 			cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
-			andaMotores(DIRECAO_LADO,-pot);
+			andaMotores(DIRECAO_LADO_Y,-pot);
 			while(!acabouDeAndar(cont_inicial_1,cont_inicial_2,dist))
 			{
 				cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
