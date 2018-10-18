@@ -21,13 +21,7 @@ extern "C" {
 
 using namespace std;
 
-/*---------definicoes dos sensores----------*/
-
 #define PI 3.14159265f
-
-// change these for your platform
-// on BB this is equivilant to RC_BB_SPI1_SS1
-
 
 /*-------------definicoes do SPI------------*/
 
@@ -68,11 +62,28 @@ static void __signal_handler(__attribute__ ((unused)) int dummy);
 #define MOTOR_TRAS 2
 #define MOTOR_DIREITA 3
 #define MOTOR_ESQUERDA 4
+#define TODOS_OS_MOTORES 0
 
-#define DIRECAO_LADO 1
-#define DIRECAO_SENSORES 2
+#define DUTY_CYCLE_MAXIMO 0.725f//normaliza potencia
+#define NORMALIZA_POTENCIA DUTY_CYCLE_MAXIMO/100
 
+#define DIRECAO_LADO_Y 1
+#define DIRECAO_SENSORES_X 2
+
+#define QUANTIDADE_PULSOS_POR_REV 350
+#define QUANTIDADE_PULSOS_PRECISAO 5
+#define DIAMETRO_DA_RODA 11
+
+/*------------definicoes locomocao-------------*/
+#define X_POS 1
+#define Y_NEG 2
+#define X_POS 3
+#define Y_NEG 4
+
+void andaMotores(int direcao, float vel);
 void inicializa();
+void andaDistancia(float dist, int eixo);
+bool acabouDeAndar(long long int cont1, long long int cont2, float dist);
 
 int main () 
 {
@@ -96,21 +107,83 @@ int main ()
 	return 0;
 }
 
+
 void inicializa()
 {
 	rc_motor_init_freq(RC_MOTOR_DEFAULT_PWM_FREQ);
+	rc_encoder_init();
 }
 
-void andaMotores(int direcao, int vel)
+bool acabouDeAndar(long long int cont1, long long int cont2, float dist)
 {
-	if (direcao == DIRECAO_SENSORES)
+	return ((abs(cont1-cont2)< QUANTIDADE_PULSOS_PRECISAO) && cont1>=round(dist*QUANTIDADE_PULSOS_POR_REV/DIAMETRO_DA_RODA))? true : false;
+}
+
+void andaDistancia(float dist, float pot,int eixo)
+{
+	long long int cont_inicial_1 = 0;
+	long long int cont_inicial_2 = 0;
+	switch(eixo)
 	{
-		rc_motor_set(MOTOR_DIREITA,vel);
-		rc_motor_set(MOTOR_ESQUERDA,vel);
-	}else if(direcao == DIRECAO_LADO)
+		case X_POS:
+			cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
+			cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
+			andaMotores(DIRECAO_SENSORES,pot);
+			while(!acabouDeAndar(cont_inicial_1,cont_inicial_2,dist))
+			{
+				cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
+				cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
+			}
+			break;
+		case X_NEG:
+			cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
+			cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
+			andaMotores(DIRECAO_SENSORES,-pot);
+			while(!acabouDeAndar(cont_inicial_1,cont_inicial_2,dist))
+			{
+				cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
+				cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
+			}
+
+			break;
+		case Y_POS:
+			cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
+			cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
+			andaMotores(DIRECAO_LADO,pot);
+			while(!acabouDeAndar(cont_inicial_1,cont_inicial_2,dist))
+			{
+				cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
+				cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
+			}
+			break;
+		case Y_NEG:
+			cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
+			cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
+			andaMotores(DIRECAO_LADO,-pot);
+			while(!acabouDeAndar(cont_inicial_1,cont_inicial_2,dist))
+			{
+				cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
+				cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
+			}
+			break;
+		default:
+			break;
+
+	}
+
+	rc_motor_brake(TODOS_OS_MOTORES);
+}
+
+void andaMotores(int direcao, float pot)
+{
+	if (direcao == DIRECAO_SENSORES_X)
 	{
-		rc_motor_set(MOTOR_FRENTE,vel);
-		rc_motor_set(MOTOR_TRAS,vel);
+		rc_motor_set(MOTOR_DIREITA,pot*NORMALIZA_POTENCIA);
+		rc_motor_set(MOTOR_ESQUERDA,pot*NORMALIZA_POTENCIA);
+	}else if(direcao == DIRECAO_LADO_Y)
+	{
+		rc_motor_set(MOTOR_FRENTE,pot*NORMALIZA_POTENCIA);
+		rc_motor_set(MOTOR_TRAS,pot*NORMALIZA_POTENCIA);
 	}
 }
 
