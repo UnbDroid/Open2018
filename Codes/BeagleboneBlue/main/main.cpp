@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-
+#include <math.h>
 extern "C" {
     #include <stdio.h>
     #include <stdlib.h> // for atoi
@@ -22,6 +22,7 @@ extern "C" {
 using namespace std;
 
 #define PI 3.14159265f
+[[gnu::unused]] static void __signal_handler( [[gnu::unused]] int dummy);
 
 /*-------------definicoes do SPI------------*/
 
@@ -34,7 +35,7 @@ using namespace std;
 
 #define SLAVE_MODE	SPI_SLAVE_MODE_AUTO
 #define BUS_MODE	SPI_MODE_0
-#define SPI_SPEED	50000
+#define SPI_SPEED	100000
 string SpiComm(int canal, char* dado, int tamanho_resposta);
 
 
@@ -54,7 +55,6 @@ void lerSensoresChassis();
 /*---------definicoes signal handling----------*/
 static int running = 0;
 
-static void __signal_handler(__attribute__ ((unused)) int dummy);
 
 
 /*------------definicoes motores---------------*/
@@ -76,9 +76,10 @@ static void __signal_handler(__attribute__ ((unused)) int dummy);
 
 /*------------definicoes locomocao-------------*/
 #define X_POS 1
-#define Y_NEG 2
-#define X_POS 3
+#define X_NEG 2
+#define Y_POS 3
 #define Y_NEG 4
+
 
 void andaMotores(int direcao, float vel);
 void inicializa();
@@ -92,7 +93,7 @@ int main ()
 
 	inicializa();	
 	
-	string retorno = SpiComm(0,"s",16);
+	string retorno = string(SpiComm(0,(char *)"s",16));
 	cout << retorno <<endl<<retorno.length()<<endl;
 	
 	lerSensoresChassis();
@@ -224,7 +225,7 @@ string SpiComm(int canal, char* dado, int tamanho_resposta)
 void lerSensoresChassis()
 {
 	//char* tag = "s";
-	string aux = SpiComm(CANAL_CHASSIS,"s",TAMANHO_RESPOSTA_CHASSIS);
+	string aux = SpiComm(CANAL_CHASSIS,(char *)"s",TAMANHO_RESPOSTA_CHASSIS);
 	int j = 0;
 	for (int i = 0; (i < signed(aux.length())) && (j < (QUANTIDADE_LDR + QUANTIDADE_COR)); ++i)
 	{
@@ -260,7 +261,7 @@ void imprimeLeituras(int sensores)
 	}
 }
 
-static void __signal_handler(__attribute__ ((unused)) int dummy)
+[[gnu::unused]] static void __signal_handler([[gnu::unused]] int dummy)//__attribute__ ((unused)) int dummy)
 {
 	running=0;
 	return;
