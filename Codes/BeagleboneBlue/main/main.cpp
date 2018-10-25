@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+
 extern "C" {
     #include <stdio.h>
     #include <stdlib.h> // for atoi
@@ -53,7 +54,7 @@ void imprimeLeituras(int sensores);
 void lerSensoresChassis();
 
 /*---------definicoes signal handling----------*/
-static int running = 0;
+static int running;
 
 
 
@@ -82,16 +83,38 @@ static int running = 0;
 
 
 void andaMotores(int direcao, float vel);
-void inicializa();
+int inicializa();
 void andaDistancia(float dist, int eixo);
 bool acabouDeAndar(long long int cont1, long long int cont2, float dist);
+
+vector<float> orientacao(3);
+
+
+/*-----------definicoes mpu--------------------*/
+// bus for Robotics Cape and BeagleboneBlue is 2, interrupt pin is on gpio3.21
+// change these for your platform
+#define I2C_BUS 2
+#define GPIO_INT_PIN_CHIP 3
+#define GPIO_INT_PIN_PIN  21
+static rc_mpu_data_t data;
+
+void __atualizaOrientacao()
+{
+	orientacao[0] = data.dmp_TaitBryan[TB_PITCH_X]*RAD_TO_DEG;
+	orientacao[1] = data.dmp_TaitBryan[TB_ROLL_Y]*RAD_TO_DEG;
+	orientacao[2] = data.dmp_TaitBryan[TB_YAW_Z]*RAD_TO_DEG;
+}
 
 int main () 
 {
 	//vector<char> dados = {'x','l'};
 	//char* dados = "s";
-
-	inicializa();	
+	if (inicializa())
+	{
+		cout << "deu ruim na inicializacao"<<endl;
+		return 0;
+	}
+			
 	
 	string retorno = string(SpiComm(0,(char *)"s",16));
 	cout << retorno <<endl<<retorno.length()<<endl;
@@ -101,18 +124,48 @@ int main ()
 	imprimeLeituras(SENSORES_COR);
 
 
-	while(running){
+	while(running)
+	{
 		rc_usleep(500000);
+		//cout<<orientacao[0]<<"  "<<orientacao[1]<<"  "<<orientacao[2]<<endl;
 	}
 
 	return 0;
 }
 
 
-void inicializa()
+int inicializa()
 {
+	signal(SIGINT, __signal_handler);
+	running = 1;
+	system("config-pin p9.30 spi");
+	system("config-pin p9.31 spi_sclk");
+	system("config-pin p9.28 spi_cs");
+	system("config-pin p9.29 spi");
+	cout << "Spi pins activated" << endl;
+	
+	rc_mpu_config_t config = rc_mpu_default_config();
+	config.i2c_bus = I2C_BUS;
+
+	if(rc_mpu_calibrate_gyro_routine(config)<0){
+		cout << "Failed to complete gyro calibration\n";
+		return -1;
+	}
+	cout << "Gyro Calibrated." << endl;
+	
+	config.gpio_interrupt_pin_chip = GPIO_INT_PIN_CHIP;
+	config.gpio_interrupt_pin = GPIO_INT_PIN_PIN;
+	
+	if(rc_mpu_initialize_dmp(&data, config)){
+		printf("rc_mpu_initialize_failed\n");
+		return -1;
+	}
+	
+	rc_mpu_set_dmp_callback(&__atualizaOrientacao);
+
 	rc_motor_init_freq(RC_MOTOR_DEFAULT_PWM_FREQ);
 	rc_encoder_init();
+	return 0;
 }
 
 bool acabouDeAndar(long long int cont1, long long int cont2, float dist)
