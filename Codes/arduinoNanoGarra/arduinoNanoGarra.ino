@@ -1,91 +1,46 @@
-/* SPI Slave Demo
-   SPI pin numbers:
-   SCK   13  // Serial Clock.
-   MISO  12  // Master In Slave Out.
-   MOSI  11  // Master Out Slave In.
-   SS    10  // Slave Select
-*/
-// Include SPI (Serial Peripheral Interface) library. Does not support SPI Slave.
-#include <SPI.h>
+//o vetor de comunicacao comeca com o byte I e termina com o byte F
+volatile byte dados [17] = "II123113121121FF";
 
-boolean SSlast = LOW;         // SS last flag.
-const byte cmdSensores = 's';        // SPI cmdBtn master command code.
-
-uint8_t pos_x, pos_y;
-
-//Initialize SPI slave.
-
-void SlaveInit(void) {
-  // Initialize SPI pins.
-  pinMode(SCK, INPUT);
-  pinMode(MOSI, INPUT);
-  pinMode(MISO, INPUT);
-  pinMode(SS, INPUT);
-  // Enable SPI as slave.
-  SPCR = (1 << SPE);
-}
-
-// SPI Transfer.
-byte SPItransfer(byte value) {
-  SPDR = value;
-  while (!(SPSR & (1 << SPIF)));
-  delayMicroseconds(5);
-  return SPDR;
-}
-
-void treatSPI()
+volatile int pos;
+volatile bool active;
+void setup (void)
 {
-  // Yes, first time?
-    if (SSlast != LOW) {
-      // Yes, take MISO pin.
-      pinMode(MISO, OUTPUT);
-      // Write -1 slave response code and receive master command code
-      rx = SPItransfer(255);
-      rx = SPItransfer(255);
-      if (rx = 'x') {
-        //byte rx = SPItransfer('I');
-        pos_x = SPItransfer('o');
-      }else if (rx = 'y') {
-        //byte rx = SPItransfer('I');
-        pos_y = SPItransfer('o');
-      }
-    }
-    rx = SPItransfer(255);
-    rx = SPItransfer(255);
-    SSlast = LOW;
-}
+  // have to send on master in, *slave out*
+  pinMode(MISO, OUTPUT);
+  // turn on SPI in slave mode
+  SPCR |= bit(SPE);
+  
+  // turn on interrupts
+  SPCR |= bit(SPIE);
+}  // end of setup
 
-// The setup() function runs after reset.
-void setup() {
-  // Initialize SPI Slave.
-  SlaveInit();
-  Serial.begin(9600);
-}
 
-//////////////////////coloque execucao do movimento aqui
-
-void executaMov()
+// SPI interrupt routine
+ISR (SPI_STC_vect)
 {
-}
-
-
-
-// The loop function runs continuously after setup().
-void loop() {
-  // Slave Enabled?
-  if (!digitalRead(SS)) {
-      treatSPI();
-
+  byte c = SPDR;
+  if (c == 'g')
+  {
+    active = true;
+    pos = 0;
+    SPDR = dados [pos++];   // send first byte
+    //while (!(SPSR & (1 << SPIF)));
+    return;
   }
-  else {
-    // No, first time?
-    executaMov();
-    if (SSlast != HIGH) {
-      // Yes, release MISO pin.
-      pinMode(MISO, INPUT);
-      // Update SSlast.
-      SSlast = HIGH;
-    }
-    Serial.println("pos_x="+ String(pos_x) + "pos_y="+ String(pos_y));
+
+  if (!active)
+  {
+    SPDR = 0;
+
+    return;
   }
+
+  SPDR = sensors [pos];
+  if (sensors [pos] == 0 || ++pos >= sizeof (sensors))
+    active = false;
+}  // end of interrupt service routine (ISR) SPI_STC_vect
+
+void loop (void)
+{
+  
 }
