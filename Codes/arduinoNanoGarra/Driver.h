@@ -60,7 +60,7 @@ class Driver{
 		uint8_t _M0;		// pin for setting resolution
 		uint8_t _M1;		// pin for setting resolution
 		uint8_t _M2;		// pin for setting resolution
-		float _period;	// Time between steps, value in microseconds
+		float _period;	// Time between steps, value in miliseconds
 		char _axis;			// Axis that the driver will be responsible for controlling
 		float _pos;			// Position that the driver holds
 		float _diameter;	// Outer diameter of what is connected to the stepper 

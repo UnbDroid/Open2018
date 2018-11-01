@@ -280,44 +280,31 @@ void Driver::send_pulses(int steps){
 	// Make sure step is initially low	
 	digitalWrite(this->_STP, LOW);
 	
-	if(this->_period > 10000){
-		delay((unsigned int)this->_period/2000);
-		
-		int i;
-		
-		for(i=0;i<steps;i++){
-			digitalWrite(this->_STP, HIGH);
-			delay((unsigned int)(this->_period)/2000);
-			digitalWrite(this->_STP, LOW);
-			delay((unsigned int)(this->_period)/2000);
-		}
-	}
-	else{
-		delayMicroseconds((unsigned int)(this->_period)/2);	// Wait before rising STP output again		
-		
-		int i;
-		
-		for(i=0;i<steps;i++){
-			digitalWrite(this->_STP, HIGH);
-			delayMicroseconds((unsigned int)(this->_period)/2);
-			digitalWrite(this->_STP, LOW);
-			delayMicroseconds((unsigned int)(this->_period)/2);
-		};
-	};
+	delay(this->_period/2);
+	
+	int i;
+	
+	for(i=0;i<steps;i++){
+		digitalWrite(this->_STP, HIGH);
+		delay(this->_period/2);
+		digitalWrite(this->_STP, LOW);
+		delay(this->_period/2);
+	};	
 }
 
 void Driver::set_speed(float SPS){		// Speed input as Steps Per Second
 	// It is important to note that if the motor does not work as expected the problem could be with the motor, and not the driver
-	this->_period = (float)1000000/SPS;		//	(microseconds/second) / (steps/second) = (microseconds/steps)
-	
-	if(this->_type){		// If A4988
-		if(this->_period < 3){
-			this->_period = 3;
+	this->_period = 1000.0/SPS;		//	(miliseconds/second) / (steps/second) = (miliseconds/steps)
+
+	// Both conditions are the same, but i choose to let the code like that if we want to set a specific minimum for different types
+	if(this->_type){		// If A4988, the minimum required is 2 us between steps, here we set the minimum to 2 ms
+		if(this->_period < 2){
+			this->_period = 2;
 		};
 	}
-	else {
-		if(this->_period < 4){
-			this->_period = 4;
+	else {					// With de DRV8825, the minium required is about 4us, we also set to 2ms
+		if(this->_period < 2){
+			this->_period = 2;
 		};
 	};
 }
@@ -441,7 +428,7 @@ void move_together(Driver &drv_1, float dist_1, Driver &drv_2, float dist_2, cha
 	// IMPORTANT NOTE: IF THE PROGRAM DOES NOT BEHAVE AS EXPECTED, THE PROBLEM MIGHT BE THE USE OF 'unsigned long'
 	
 	// hp = half period
-	unsigned long hp_1 = drv_1._period / 2000, hp_2 = drv_2._period / 2000;
+	float hp_1 = drv_1._period / 2, hp_2 = drv_2._period / 2;
 	
 	bool step_1=1, step_2=1;
 	
