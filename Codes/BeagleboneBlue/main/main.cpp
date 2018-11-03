@@ -35,14 +35,37 @@ using namespace std;
 	#define SLAVE_MODE	SPI_SLAVE_MODE_AUTO
 	#define BUS_MODE	SPI_MODE_0
 	#define SPI_SPEED	100000
+	
+	#define ID_SENSORES_CHASSIS (char *)"s"
+	#define ID_SENSORES_US (char *)"u"
+	#define ID_SENSOR_COR_GARRA (char *)"p"
+	#define ID_LIGA_ELETROIMA (char *)"e"
+	#define ID_DESLIGA_ELETROIMA (char *)"d"
+
 	string SpiComm(int canal, char* dado, int tamanho_resposta);
 /*-----------definicoes dos sensores------------*/
 	#define QUANTIDADE_LDR 8
 	#define QUANTIDADE_COR 4
+	#define QUANTIDADE_US 2
+	
 	#define TAMANHO_RESPOSTA_CHASSIS 16
+	#define TAMANHO_RESPOSTA_US 6
+	#define TAMANHO_RESPOSTA_COR_GARRA 5
+
 	#define SENSORES_LDR 1
 	#define SENSORES_COR 2
+	#define SENSORES_US 3
+	#define SENSOR_COR_GARRA 4
 	
+	#define SENSORES_CHASSIS 0
+
+	#define SENSOR_US_DIREITA 0
+	#define SENSOR_US_ESQUERDA 1
+	
+	#define MAXIMO_US 15
+
+	#define NORMALIZA_US MAXIMO_US/256
+
 	#define LDRS_FRENTE 0,1
 	#define LDRS_DIREITA 2,3
 	#define LDRS_ESQUERDA 4,5
@@ -52,18 +75,24 @@ using namespace std;
 	#define PRETO 2 
 	#define VERDE 3 
 	#define AZUL 4
-
-	vector<uint8_t> sensoresLDR(8);
-	vector<uint8_t> sensoresCOR(4);
-
+	#define VERMELHO 5
 	void imprimeLeituras(int sensores);
-	void lerSensoresChassis();
+	void lerSensores(int sensores);
+
+	vector<uint8_t> sensoresLDR(QUANTIDADE_LDR);
+	vector<uint8_t> sensoresCOR(QUANTIDADE_COR);
+	uint8_t sensor_cor_garra; 
+
+	#define US_DIREITA 0
+	#define US_ESQUERDA 1
+
+	vector<float> sensoresUS(QUANTIDADE_US);
+
 /*----------definicoes signal handling----------*/
 	timespec ts_geral;
 	static int running;
 	[[gnu::unused]] static void __signal_handler( [[gnu::unused]] int dummy);
 /*------------definicoes motores----------------*/
-
 	#define MOTOR_FRENTE 1
 	#define MOTOR_ESQUERDA 2
 	#define MOTOR_DIREITA 3
@@ -113,9 +142,10 @@ using namespace std;
 	#define GPIO_INT_PIN_PIN  21
 	static rc_mpu_data_t data;
 	void __atualizaOrientacao();
-/*----------------------------------------------*/
+/*------------definicoes garra-------------------*/
 
-
+	bool ligaEletroIma(bool liga);
+	#define TAMANHO_RESPOSTA_ELETROIMA 5
 
 
 int main () 
@@ -127,24 +157,25 @@ int main ()
 	}
 	cout<<"tentando andar "<<endl;
 	andaDistancia(20, X_POS);	
-	//string retorno = string(SpiComm(0,(char *)"s",16));
-	//cout << retorno <<endl<<retorno.length()<<endl;
-	// float pot = 50;
-	// rc_motor_set(MOTOR_DIREITA,pot*NORMALIZA_POTENCIA);
-	 rc_motor_set(MOTOR_FRENTE,-POTENCIA_NORMAL*NORMALIZA_POTENCIA);
-	 rc_motor_set(MOTOR_TRAS,POTENCIA_NORMAL*NORMALIZA_POTENCIA);
-	// rc_motor_set(MOTOR_ESQUERDA,-pot*NORMALIZA_POTENCIA);
+	string retorno = string(SpiComm(0,(char *)"s",16));
+	cout << retorno <<endl<<retorno.length()<<endl;
+	float pot = 50;
+	rc_motor_set(MOTOR_DIREITA,pot*NORMALIZA_POTENCIA);
+	rc_motor_set(MOTOR_FRENTE,-POTENCIA_NORMAL*NORMALIZA_POTENCIA);
+	rc_motor_set(MOTOR_TRAS,POTENCIA_NORMAL*NORMALIZA_POTENCIA);
+	rc_motor_set(MOTOR_ESQUERDA,-pot*NORMALIZA_POTENCIA);
 
-	 while(running)
-	 {
-	 	rc_usleep(500000);
-		cout<<orientacao_z<<endl;
-	 }
-	 rc_motor_brake(TODOS_OS_MOTORES);
+	while(running)
+	{
+		rc_usleep(500000);
+		cout << orientacao_z << endl;
+	}
 
-	//lerSensoresChassis();
-	//imprimeLeituras(SENSORES_LDR);
-	//imprimeLeituras(SENSORES_COR);
+	rc_motor_brake(TODOS_OS_MOTORES);
+
+	lerSensores(SENSORES_US);
+	imprimeLeituras(SENSORES_LDR);
+	imprimeLeituras(SENSORES_COR);
 	return 0;
 }
 
@@ -247,8 +278,6 @@ void abreServos()
 	rc_servo_send_pulse_normalized(SERVO_4,POS_MAX_SERVO);
 }
 
-
-
 void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot)
 {
 	static float d_enc, integral, integral_passado, erro_passado;
@@ -262,7 +291,7 @@ void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot)
 		integral_passado = 0;
 		erro_passado = 0;
 		pot_ref[motor_a-1] = pot;
-		pot_ref[motor_b-1] = -pot;
+		pot_ref[motor_b-1] = pot;
 	}
 	d_enc = (float)(rc_encoder_read(motor_a) - rc_encoder_read(motor_b));
 	dt = rc_timespec_to_micros(ts_geral) - tempo_passado;
@@ -298,6 +327,7 @@ void andaDistancia(float dist,int eixo)
 				cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
 				//cout<<"c1 "<<cont_inicial_1<<" c2 "<<cont_inicial_2<<endl;
 				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
+				andaMotores(DIRECAO_X);
 			}
 			break;
 		case X_NEG:
@@ -310,7 +340,7 @@ void andaDistancia(float dist,int eixo)
 				cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
 				cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
 				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
-
+				andaMotores(DIRECAO_X);
 			}
 
 			break;
@@ -324,6 +354,7 @@ void andaDistancia(float dist,int eixo)
 				cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
 				cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
 				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, POTENCIA_NORMAL);
+				andaMotores(DIRECAO_Y);
 			}
 			break;
 		case Y_NEG:
@@ -336,6 +367,7 @@ void andaDistancia(float dist,int eixo)
 				cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
 				cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
 				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, -POTENCIA_NORMAL);
+				andaMotores(DIRECAO_Y);
 			}
 			break;
 		default:
@@ -349,12 +381,12 @@ void andaMotores(int direcao)
 {
 	if (direcao == DIRECAO_X)
 	{
-		(abs(pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) ? rc_motor_set(MOTOR_FRENTE,pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) : rc_motor_set(MOTOR_FRENTE,DUTY_CYCLE_MAXIMO);
-		(abs(pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) ? rc_motor_set(MOTOR_TRAS,pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA) : rc_motor_set(MOTOR_TRAS,DUTY_CYCLE_MAXIMO);
+		(abs(pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) ? rc_motor_set(MOTOR_FRENTE,pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) : rc_motor_set(MOTOR_FRENTE,(abs(pot_ref[MOTOR_FRENTE-1])/(pot_ref[MOTOR_FRENTE-1]))*DUTY_CYCLE_MAXIMO);
+		(abs(pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) ? rc_motor_set(MOTOR_TRAS,pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA) : rc_motor_set(MOTOR_TRAS,(abs(pot_ref[MOTOR_FRENTE-1])/(pot_ref[MOTOR_FRENTE-1]))*DUTY_CYCLE_MAXIMO);
 	}else if(direcao == DIRECAO_Y)
 	{
-		(abs(pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) ? rc_motor_set(MOTOR_DIREITA,pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) : rc_motor_set(MOTOR_DIREITA,DUTY_CYCLE_MAXIMO);
-		(abs(pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) ? rc_motor_set(MOTOR_ESQUERDA,pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA) : rc_motor_set(MOTOR_ESQUERDA,DUTY_CYCLE_MAXIMO);
+		(abs(pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) ? rc_motor_set(MOTOR_DIREITA,pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) : rc_motor_set(MOTOR_DIREITA,(abs(pot_ref[MOTOR_FRENTE-1])/(pot_ref[MOTOR_FRENTE-1]))*DUTY_CYCLE_MAXIMO);
+		(abs(pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) ? rc_motor_set(MOTOR_ESQUERDA,pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA) : rc_motor_set(MOTOR_ESQUERDA,(abs(pot_ref[MOTOR_FRENTE-1])/(pot_ref[MOTOR_FRENTE-1]))*DUTY_CYCLE_MAXIMO);
 	}
 }
 
@@ -392,41 +424,101 @@ string SpiComm(int canal, char* dado, int tamanho_resposta)
 	return vec;
 }
 
-void lerSensoresChassis()
+bool ligaEletroIma(bool liga)
 {
-	string aux = SpiComm(CANAL_CHASSIS,(char *)"s",TAMANHO_RESPOSTA_CHASSIS);
-	int j = 0;
-	for (int i = 0; (i < signed(aux.length())) && (j < (QUANTIDADE_LDR + QUANTIDADE_COR)); ++i)
+	if(liga)
 	{
-		if (aux[i] >= '1' && aux[i] <= ('1'+2))
+		string aux = SpiComm(CANAL_GARRA, ID_LIGA_ELETROIMA, TAMANHO_RESPOSTA_ELETROIMA);
+		for (int i = 0; (i < signed(aux.length())); ++i)
 		{
-			if(j<QUANTIDADE_LDR){
-				sensoresLDR[j] = aux[i] - '0';
-				//printf("%c %d \n",aux[i],sensoresLDR[j]);
-			}
-			else{
-				sensoresCOR[j- QUANTIDADE_LDR] = aux[i] - '0';
-				//printf("%c %d j=%d \n",aux[i],sensoresCOR[j- QUANTIDADE_LDR],j);
-			}
-			j++;
+			if (aux[i] == '1')
+				return true;
 		}
+	}else{
+		string aux = SpiComm(CANAL_GARRA, ID_LIGA_ELETROIMA, TAMANHO_RESPOSTA_ELETROIMA);
+		for (int i = 0; (i < signed(aux.length())); ++i)
+		{
+			if (aux[i] == '1')
+				return true;
+		}
+	}
+	return false;
+}
+
+
+void lerSensores(int sensor)
+{
+	switch(sensor)
+	{
+		case SENSORES_CHASSIS:{
+			string aux = SpiComm(CANAL_CHASSIS, ID_SENSORES_CHASSIS, TAMANHO_RESPOSTA_CHASSIS);
+			int j = 0;
+			for (int i = 0; (i < signed(aux.length())) && (j < (QUANTIDADE_LDR + QUANTIDADE_COR)); ++i)
+			{
+				if (aux[i] >= '1' && aux[i] <= ('1'+3))
+				{
+					if(j<QUANTIDADE_LDR){
+						sensoresLDR[j] = aux[i] - '0';
+						//printf("%c %d \n",aux[i],sensoresLDR[j]);
+					}
+					else{
+						sensoresCOR[j- QUANTIDADE_LDR] = aux[i] - '0';
+						//printf("%c %d j=%d \n",aux[i],sensoresCOR[j- QUANTIDADE_LDR],j);
+					}
+					j++;
+				}
+			}
+			break;
+		}
+		case SENSORES_US:{
+			string aux = SpiComm(CANAL_GARRA, ID_SENSORES_US, TAMANHO_RESPOSTA_US);
+			int j = 0;
+			for (int i = 0; (i < signed(aux.length())) && (j < (QUANTIDADE_US)); ++i)
+			{
+				if (aux[i] != (unsigned char) 253 && aux[i] != (unsigned char) 254)
+				{
+					if(j<QUANTIDADE_US){
+						sensoresUS[j] = (float) aux[i]*NORMALIZA_US;
+					}
+					j++;
+				}
+			}
+			break;
+		}
+		case SENSOR_COR_GARRA:{
+			string aux = SpiComm(CANAL_GARRA, ID_SENSOR_COR_GARRA, TAMANHO_RESPOSTA_COR_GARRA);
+			int j = 0;
+			for (int i = 0; (i < signed(aux.length())) && (j <= 0); ++i)
+			{
+				if (aux[i] >= '1' && aux[i] <= ('1' + 4))
+				{
+					sensor_cor_garra =  aux[i]-'0';
+					j++;
+				}
+			}
+			break;
+		}	
 	}
 }
 
 
 void imprimeLeituras(int sensores)
 {
-	if (sensores == SENSORES_LDR)
+	switch(sensores)
 	{
-		for (int i = 0; i < signed(sensoresLDR.size()); ++i)
-		{
-			cout<<"sensorLDR "<<i<<"= "<<int(sensoresLDR[i])<<endl;
-		}
-	}else if(sensores == SENSORES_COR){
-		for (int i = 0; i < signed(sensoresCOR.size()); ++i)
-		{
-			cout<<"sensorCOR "<<i<<"= "<<int(sensoresCOR[i])<<endl;
-		}
+		case SENSORES_LDR:
+			for (int i = 0; i < signed(sensoresLDR.size()); ++i)
+				cout<<"sensorLDR "<<i<<"= "<<int(sensoresLDR[i])<<endl;
+			break;
+		case SENSORES_COR:
+			for (int i = 0; i < signed(sensoresCOR.size()); ++i)
+				cout<<"sensorCOR "<<i<<"= "<<int(sensoresCOR[i])<<endl;
+		case SENSORES_US:
+			for (int i = 0; i < signed(sensoresUS.size()); ++i)
+				cout<<"sensorUS "<<i<<"= "<<float(sensoresUS[i])<<endl;
+			break;
+		default:
+			break;
 	}
 }
 
