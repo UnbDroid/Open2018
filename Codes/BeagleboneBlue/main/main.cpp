@@ -41,6 +41,25 @@ using namespace std;
 	#define ID_SENSOR_COR_GARRA (char *)"p"
 	#define ID_LIGA_ELETROIMA (char *)"e"
 	#define ID_DESLIGA_ELETROIMA (char *)"d"
+	#define ID_MEXE_GARRA_Z (char *)"z "
+	#define ID_MEXE_GARRA_V (char *)"r "
+	#define ID_CHECA_GARRA (char *)"c"
+
+
+	#define HANDSHAKE_INICIO_US (unsigned char) 253
+	#define HANDSHAKE_FIM_US (unsigned char) 254
+
+	#define HANDSHAKE_INICIO_GARRA (unsigned char) 253
+	#define HANDSHAKE_FIM_GARRA (unsigned char) 254
+
+
+	#define TAMANHO_RESPOSTA_CHASSIS 16
+	#define TAMANHO_RESPOSTA_US 6
+	#define TAMANHO_RESPOSTA_COR_GARRA 5
+	#define TAMANHO_RESPOSTA_ELETROIMA 5
+	#define TAMANHO_RESPOSTA_MEXE_GARRA 5
+	#define TAMANHO_RESPOSTA_CHECA_GARRA 5
+
 
 	string SpiComm(int canal, char* dado, int tamanho_resposta);
 /*-----------definicoes dos sensores------------*/
@@ -48,10 +67,6 @@ using namespace std;
 	#define QUANTIDADE_COR 4
 	#define QUANTIDADE_US 2
 	
-	#define TAMANHO_RESPOSTA_CHASSIS 16
-	#define TAMANHO_RESPOSTA_US 6
-	#define TAMANHO_RESPOSTA_COR_GARRA 5
-
 	#define SENSORES_LDR 1
 	#define SENSORES_COR 2
 	#define SENSORES_US 3
@@ -124,7 +139,7 @@ using namespace std;
 	#define Y_NEG 4
 
 	#define INDICE_FRENTE 0
-	#define INDIC_ESQUERDA 1
+	#define INDICE_ESQUERDA 1
 	#define INDICE_DIREITA 2
 	#define INDICE_TRAS 3
 
@@ -145,8 +160,15 @@ using namespace std;
 /*------------definicoes garra-------------------*/
 
 	bool ligaEletroIma(bool liga);
-	#define TAMANHO_RESPOSTA_ELETROIMA 5
+	int mexeGarra(int eixo, float distancia, bool espera);
+	
+	#define EIXO_HORIZONTAL 1
+	#define EIXO_VERTICAL 2
 
+	#define NORMALIZA_GARRA_Z 1
+	#define NORMALIZA_GARRA_R 1
+
+/*-----------------------------------------------*/
 
 int main () 
 {
@@ -182,7 +204,8 @@ int main ()
 int inicializa()
 {
 	signal(SIGINT, __signal_handler);
-	running = 1;
+	
+	running = 1;	
 	system("config-pin p9.30 spi");
 	system("config-pin p9.31 spi_sclk");
 	system("config-pin p9.28 spi_cs");
@@ -202,9 +225,9 @@ int inicializa()
 	cout << "\033[1;31m"<<"RODOU COM SUDO MERMAO ? SE NAO VOLTA E RODA COM SUDO"<<"\033[0m"<< endl;
 	if(rc_servo_init()) return -1;
 	
+
 	config.gpio_interrupt_pin_chip = GPIO_INT_PIN_CHIP;
-	config.gpio_interrupt_pin = GPIO_INT_PIN_PIN;
-	
+	config.gpio_interrupt_pin = GPIO_INT_PIN_PIN;	
 	if(rc_mpu_initialize_dmp(&data, config)){
 		printf("rc_mpu_initialize_failed\n");
 		return -1;
@@ -265,19 +288,19 @@ void __atualizaOrientacao()
 
 void fechaServos()
 {
-	rc_servo_send_pulse_normalized(SERVO_1,0);
-	rc_servo_send_pulse_normalized(SERVO_2,0);
-	rc_servo_send_pulse_normalized(SERVO_3,0);
-	rc_servo_send_pulse_normalized(SERVO_4,0);
+	rc_servo_send_pulse_normalized(SERVO_1, 0);
+	rc_servo_send_pulse_normalized(SERVO_2, 0);
+	rc_servo_send_pulse_normalized(SERVO_3, 0);
+	rc_servo_send_pulse_normalized(SERVO_4, 0);
 }
 
 
 void abreServos()
-{
-	rc_servo_send_pulse_normalized(SERVO_1,POS_MAX_SERVO);
-	rc_servo_send_pulse_normalized(SERVO_2,POS_MAX_SERVO);
-	rc_servo_send_pulse_normalized(SERVO_3,POS_MAX_SERVO);
-	rc_servo_send_pulse_normalized(SERVO_4,POS_MAX_SERVO);
+{ 
+	rc_servo_send_pulse_normalized(SERVO_1, POS_MAX_SERVO);
+	rc_servo_send_pulse_normalized(SERVO_2, POS_MAX_SERVO);
+	rc_servo_send_pulse_normalized(SERVO_3, POS_MAX_SERVO);
+	rc_servo_send_pulse_normalized(SERVO_4, POS_MAX_SERVO);
 }
 
 void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot)
@@ -309,7 +332,7 @@ void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot)
 
 bool acabouDeAndar(long long int cont1, long long int cont2, float dist)
 {
-	return ((abs(cont1-cont2)< QUANTIDADE_PULSOS_PRECISAO) && cont1>=round(dist*QUANTIDADE_PULSOS_POR_REV/DIAMETRO_DA_RODA))? true : false;
+	return ((abs(cont1-cont2)< QUANTIDADE_PULSOS_PRECISAO) && abs(cont1)>=abs(round(dist*QUANTIDADE_PULSOS_POR_REV/DIAMETRO_DA_RODA)))? true : false;
 }
 
 void andaDistancia(float dist,int eixo)
@@ -426,6 +449,51 @@ string SpiComm(int canal, char* dado, int tamanho_resposta)
 	return vec;
 }
 
+int mexeGarra(int eixo, float distancia, bool espera)
+{
+	if (!espera) 
+	{
+		switch (eixo)
+		{
+			case EIXO_VERTICAL:{
+				char * msg = ID_MEXE_GARRA_Z;
+				msg[1] = (round(abs(distancia * NORMALIZA_GARRA_Z))>=127) ? (char)round(distancia * NORMALIZA_GARRA_Z) : (char)(distancia/abs(distancia))*127;  
+				string aux = SpiComm(CANAL_GARRA, msg, TAMANHO_RESPOSTA_MEXE_GARRA);
+				for (int i = 0; (i < signed(aux.length())); ++i)
+				{
+					if (aux[i] == '1')
+						return 1;
+				}
+				break;
+			}
+			case EIXO_HORIZONTAL:{			
+				char * msg = ID_MEXE_GARRA_V;
+				msg[1] = (round(abs(distancia * NORMALIZA_GARRA_R))<=127) ? (char)round(distancia * NORMALIZA_GARRA_R) : (char)(distancia/abs(distancia))*127;
+				string aux = SpiComm(CANAL_GARRA, msg, TAMANHO_RESPOSTA_MEXE_GARRA);
+				for (int i = 0; (i < signed(aux.length())); ++i)
+				{
+					if (aux[i] == '1')
+						return 1;
+				}
+				break;
+			}	
+			default:
+				break;
+		}
+	}else{
+		string aux = SpiComm(CANAL_GARRA, ID_CHECA_GARRA, TAMANHO_RESPOSTA_CHECA_GARRA);
+		for (int i = 0; (i < signed(aux.length()))); ++i)
+		{
+			if (aux[i] != HANDSHAKE_INICIO_GARRA && aux[i] != HANDSHAKE_FIM_GARRA)
+			{
+				return (int)aux[i]; 
+			}
+		}
+		return -1;
+		break;
+	}
+}
+
 bool ligaEletroIma(bool liga)
 {
 	if(liga)
@@ -437,7 +505,7 @@ bool ligaEletroIma(bool liga)
 				return true;
 		}
 	}else{
-		string aux = SpiComm(CANAL_GARRA, ID_LIGA_ELETROIMA, TAMANHO_RESPOSTA_ELETROIMA);
+		string aux = SpiComm(CANAL_GARRA, ID_DESLIGA_ELETROIMA, TAMANHO_RESPOSTA_ELETROIMA);
 		for (int i = 0; (i < signed(aux.length())); ++i)
 		{
 			if (aux[i] == '1')
@@ -459,13 +527,12 @@ void lerSensores(int sensor)
 			{
 				if (aux[i] >= '1' && aux[i] <= ('1'+3))
 				{
-					if(j<QUANTIDADE_LDR){
+					if(j<QUANTIDADE_LDR)
+					{
 						sensoresLDR[j] = aux[i] - '0';
-						//printf("%c %d \n",aux[i],sensoresLDR[j]);
 					}
 					else{
 						sensoresCOR[j- QUANTIDADE_LDR] = aux[i] - '0';
-						//printf("%c %d j=%d \n",aux[i],sensoresCOR[j- QUANTIDADE_LDR],j);
 					}
 					j++;
 				}
@@ -477,9 +544,10 @@ void lerSensores(int sensor)
 			int j = 0;
 			for (int i = 0; (i < signed(aux.length())) && (j < (QUANTIDADE_US)); ++i)
 			{
-				if (aux[i] != (unsigned char) 253 && aux[i] != (unsigned char) 254)
+				if (aux[i] != HANDSHAKE_INICIO_US && aux[i] != HANDSHAKE_FIM_US)
 				{
-					if(j<QUANTIDADE_US){
+					if(j<QUANTIDADE_US)
+					{
 						sensoresUS[j] = (float) aux[i]*NORMALIZA_US;
 					}
 					j++;
