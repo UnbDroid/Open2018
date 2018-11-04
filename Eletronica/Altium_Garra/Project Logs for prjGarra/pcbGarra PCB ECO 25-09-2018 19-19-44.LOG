@@ -1,9 +1,0 @@
-Change Component Footprint: Designator=K1 Old Footprint=3-vias New Footprint=2-vias
-Change Component Footprint: Designator=K2 Old Footprint=3-vias New Footprint=2-vias
-Change Component Footprint: Designator=K3 Old Footprint=3-vias New Footprint=2-vias
-Change Component Comment : Designator=K1 Old Comment=KK3 - FDC New Comment=KK2 - FDC
-Change Component Comment : Designator=K2 Old Comment=KK3 - FDC New Comment=KK2 - FDC
-Change Component Comment : Designator=K3 Old Comment=KK3 - FDC New Comment=KK2 - FDC
-Added Pin To Net: NetName=D7 Pin=R3-1
-Added Pin To Net: NetName=D8 Pin=R4-1
-Added Pin To Net: NetName=D9 Pin=R5-1
