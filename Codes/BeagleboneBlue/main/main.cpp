@@ -155,7 +155,7 @@ int main ()
 		cout << "deu ruim na inicializacao"<<endl;
 		return 0;
 	}
-	cout<<"tentando andar "<<endl;
+/* 	cout<<"tentando andar "<<endl;
 	andaDistancia(20, X_POS);	
 	string retorno = string(SpiComm(0,(char *)"s",16));
 	cout << retorno <<endl<<retorno.length()<<endl;
@@ -164,18 +164,18 @@ int main ()
 	rc_motor_set(MOTOR_FRENTE,-POTENCIA_NORMAL*NORMALIZA_POTENCIA);
 	rc_motor_set(MOTOR_TRAS,POTENCIA_NORMAL*NORMALIZA_POTENCIA);
 	rc_motor_set(MOTOR_ESQUERDA,-pot*NORMALIZA_POTENCIA);
-
+ */
 	while(running)
 	{
 		rc_usleep(500000);
 		cout << orientacao_z << endl;
 	}
 
-	rc_motor_brake(TODOS_OS_MOTORES);
+/* 	rc_motor_brake(TODOS_OS_MOTORES);
 
 	lerSensores(SENSORES_US);
 	imprimeLeituras(SENSORES_LDR);
-	imprimeLeituras(SENSORES_COR);
+	imprimeLeituras(SENSORES_COR); */
 	return 0;
 }
 
@@ -191,7 +191,9 @@ int inicializa()
 	
 	rc_mpu_config_t config = rc_mpu_default_config();
 	config.i2c_bus = I2C_BUS;
-
+	config.dmp_auto_calibrate_gyro = 1;
+	config.dmp_sample_rate = 4;
+	//config.enable_magnetometer = 1;
 	if(rc_mpu_calibrate_gyro_routine(config)<0){
 		cout << "Failed to complete gyro calibration\n";
 		return -1;
