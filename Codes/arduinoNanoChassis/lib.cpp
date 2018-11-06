@@ -57,23 +57,22 @@ int ColorInterval::distance(Color c)
 	return raiz(dr*dr + dg*dg + db*db);
 }
 
-void Sensor::setPins(int S0, int S1, int S2, int S3, int OUT, int sensor_number)
+// void TCS::setPins(const int S2, const int S3, const int OUT, const int sensor_number)
+void TCS::setPins(const int S2, const int S3, const int OUT)
 {
-	this->S0 = S0;
-	this->S1 = S1;
 	this->S2 = S2;
 	this->S3 = S3;
 	this->OUT = OUT;
-	this->sensor_number = sensor_number; // It only will be used if we want to save the calibration on the EEPROM
+	// this->sensor_number = sensor_number; // It only will be used if we want to save the calibration on the EEPROM
 }
 
-int Sensor::identify_color(Color cor)
+int TCS::identify_color(Color cor_read)
 {
 	int i, min;
 	int dist[4];
 	for(i = 0; i < 4; i++) // Because we have 4 possible colors on the arena: black, white, blue and green
 	{
-		dist[i] = c[i].distance(cor);
+		dist[i] = c[i].distance(cor_read);
 	}
 	min = 0;
 	for(i = 1; i < 4; i++)
@@ -84,13 +83,13 @@ int Sensor::identify_color(Color cor)
 	return min;
 }
 
-void Sensor::setColorInterval(ColorInterval inter, int position)
+void TCS::setColorInterval(ColorInterval inter, int position)
 {
 	c[position].set_med(inter.med);
 	c[position].set_std(inter.std);
 }
 
-Color Sensor::getColor()
+Color TCS::read()
 {
 	Color newColor;
 	int i;
@@ -98,28 +97,28 @@ Color Sensor::getColor()
 	digitalWrite(S2, LOW);
 	digitalWrite(S3, LOW);
 	//count OUT, pRed, RED
-	for(i = 0; i < 3 && red > 255 ; i++)
+	// for(i = 0; i < 3 && red > 255 ; i++)
 		red = pulseIn(OUT, digitalRead(OUT) == HIGH ? LOW : HIGH);
-	if(i == 3)
-		red = 0;
+	// if(i == 3)
+	// 	red = 0;
 	digitalWrite(S3, HIGH);  
 	//count OUT, pBLUE, BLUE  
-	for(i = 0; i < 3 && blue > 255 ; i++)
+	// for(i = 0; i < 3 && blue > 255 ; i++)
 		blue = pulseIn(OUT, digitalRead(OUT) == HIGH ? LOW : HIGH);  
-	if(i == 3)
-		blue = 0;
+	// if(i == 3)
+	// 	blue = 0;
 	digitalWrite(S2, HIGH);  
 	//count OUT, pGreen, GREEN  
-	for(i = 0; i < 3 && blue > 255 ; i++)
+	// for(i = 0; i < 3 && blue > 255 ; i++)
 		green = pulseIn(OUT, digitalRead(OUT) == HIGH ? LOW : HIGH); 
-	if(i == 3)
-		green = 0;
+	// if(i == 3)
+	// 	green = 0;
 	digitalWrite(S2, LOW);
 	digitalWrite(S3, LOW);
 }
 
 
-void Sensor::calibrate(int cor) // cor = 0, black; cor = 1, white; blue; green;
+void TCS::calibrate(const int cor) // cor = 0, black; cor = 1, white; blue; green;
 {
 	const int n_leituras = 10;
 	Color read_color;
@@ -131,7 +130,7 @@ void Sensor::calibrate(int cor) // cor = 0, black; cor = 1, white; blue; green;
 
 	for(j = 0; j < n_leituras; j++)
 	{
-		read_color = getColor();
+		read_color = read();
 		sum[0] += read_color.r;
 		sum[1] += read_color.g;
 		sum[2] += read_color.b;
@@ -154,18 +153,86 @@ void Sensor::calibrate(int cor) // cor = 0, black; cor = 1, white; blue; green;
 	setColorInterval(intervalo, cor);
 }
 
-void Sensor::getFromEEPROM()
+void TCS::getFromEEPROM()
 {
 
 }
 
-void Sensor::saveToEEPROM()
+void TCS::saveToEEPROM()
 {
 
 }
 
 
-int Sensor::WhatIsTheColor()
+int TCS::WhatIsTheColor()
 {
-	return identify_color(getColor());
+	return identify_color(read());
+}
+
+
+
+LDR::LDR()
+{
+	this->p = 1023;
+	this->x = 0;
+}
+int LDR::identify_color(const int valor)
+{
+	int i, min;
+	int dist[3];
+	for(i = 0; i < 3; i++) // Because we have 4 possible colors on the arena: black, white, blue and green
+	{
+		dist[i] = valor-med_calib[i];
+		if(dist[i] < 0) dist[i] = -dist[i];
+	}
+	min = 0;
+	for(i = 1; i < 3; i++)
+	{
+		if(dist[i] < dist[min])
+			min = i;
+	}
+	return min;
+}
+int LDR::read()
+{
+	unsigned int valor = analogRead(porta);
+	unsigned int k;
+	p += q;
+	k = (100*p)/(p+r);
+	x += k*(valor-x)/100;
+	p = (1-k)*p;
+	return x;
+
+}
+void LDR::calibrate(const int cor)
+{
+	int sum, sum2;
+	int med = 0, std = 0;
+	int lido;
+	int i;
+	const int n_leituras = 10;
+	for(i = 0; i < n_leituras; i++)
+	{
+		lido = read();
+		sum  += lido;
+		sum2 += lido*lido;
+	}
+	med = sum/n_leituras;
+	std = raiz(sum2/n_leituras - med*med);
+	this->med_calib[cor] = med;
+	this->std_calib[cor] = std;	
+}
+void LDR::setPorta(const int porta)
+{
+	this->porta = porta;
+}
+int LDR::WhatIsTheColor()
+{
+	return identify_color(read());
+}
+
+void LDR::set_qr(const int q, const int r)
+{
+	this->q = q;
+	this->r = r;
 }
