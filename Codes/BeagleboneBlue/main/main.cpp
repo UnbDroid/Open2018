@@ -133,7 +133,8 @@ using namespace std;
 	#define QUANTIDADE_PULSOS_PRECISAO 5
 	#define DIAMETRO_DA_RODA 10.63f
 
-	#define POTENCIA_NORMAL 60
+	#define POTENCIA_NORMAL 75
+	#define POTENCIA_FRACA 50
 
 	#define SERVO_1 1
 	#define SERVO_2 2
@@ -164,7 +165,7 @@ using namespace std;
 	void andaMotores(int direcao);
 	int inicializa();
 	void andaDistancia(float dist, int eixo);
-	bool acabouDeAndar(long long int cont1, long long int cont2, float dist);
+	bool acabouDeAndarDist(long long int cont1, long long int cont2, float dist);
 	bool chegouNaLinhaPorLDR(int eixo, int cor_linha);
 	void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot);
 	void andaAteALinha(int eixo, int cor_linha);
@@ -299,66 +300,32 @@ void controleVel(int motor)
 	prevtime = micros();
 }
 */
-void encaixaALinhaEntreOsSensores(int eixo, int cor_linha)
-{	
-	switch(eixo)
-	{
-		case X_POS:		
-			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, POTENCIA_NORMAL);
-			andaMotores(DIRECAO_X);
-			while(!chegouNaLinhaPorLDR(eixo, cor_linha) && running)
-			{
-				lerSensores(SENSORES_CHASSIS);
-				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
-				andaMotores(DIRECAO_X);
-			}
-			break;
-		case X_NEG:
-			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, -POTENCIA_NORMAL);
-			andaMotores(DIRECAO_X);
-			while(!chegouNaLinhaPorLDR(eixo, cor_linha) && running)
-			{
-				lerSensores(SENSORES_CHASSIS);
-				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
-				andaMotores(DIRECAO_X);
-			}
-			break;
-		case Y_POS:
-			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, POTENCIA_NORMAL);
-			andaMotores(DIRECAO_Y);
-			while(!chegouNaLinhaPorLDR(eixo, cor_linha) && running)
-			{
-				lerSensores(SENSORES_CHASSIS);
-				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, POTENCIA_NORMAL);
-				andaMotores(DIRECAO_Y);
-			}
-			break;
-		case Y_NEG:
-			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, -POTENCIA_NORMAL);
-			andaMotores(DIRECAO_Y);
-			while(!chegouNaLinhaPorLDR(eixo, cor_linha) && running)
-			{
-				lerSensores(SENSORES_CHASSIS);
-				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, -POTENCIA_NORMAL);
-				andaMotores(DIRECAO_Y);
-			}
-			break;
-		default:
-			break;
-
-	}
-	rc_motor_brake(TODOS_OS_MOTORES);
+bool seAlinhou(int eixo,int cor_linha)
+{
+	/////SKIRA
+	return true;
 }
+
+
+void encaixaAlinhaEntreSensores(int eixo,int cor_linha)
+{
+	/////SKIRA (considera que pode tocar no barco
+}
+
+void andaAteAcharOCanto()
+{
+	///SKIRA
+}
+
 float anguloAlinhamentoPorUS(float us_dir, float us_esq)
 {
 	return atan2((us_dir - us_esq),DISTANCIA_ENTRE_US);
 }
 
-bool acabouDeAndar(long long int cont1, long long int cont2, float dist)
+bool acabouDeAndarDist(long long int cont1, long long int cont2, float dist)
 {
 	return ((abs(cont1-cont2)< QUANTIDADE_PULSOS_PRECISAO) && abs(cont1)>=abs(round(dist*QUANTIDADE_PULSOS_POR_REV/DIAMETRO_DA_RODA)))? true : false;
 }
-
 
 void __atualizaOrientacao()
 {
@@ -387,16 +354,16 @@ bool chegouNaLinhaPorLDR(int eixo, int cor_linha)
 	switch (eixo)
 	{
 		case X_POS:
-			return ((sensoresLDR[LDR_DIREITA_BAIXO] == cor_linha) && (sensoresLDR[LDR_DIREITA_CIMA] == cor_linha));
+			return ((sensoresLDR[LDR_DIREITA_BAIXO] == cor_linha) || (sensoresLDR[LDR_DIREITA_CIMA] == cor_linha));
 			break;
 		case X_NEG:
-			return ((sensoresLDR[LDR_ESQUERDA_BAIXO] == cor_linha) && (sensoresLDR[LDR_ESQUERDA_CIMA] == cor_linha));
+			return ((sensoresLDR[LDR_ESQUERDA_BAIXO] == cor_linha) || (sensoresLDR[LDR_ESQUERDA_CIMA] == cor_linha));
 			break;
 		case Y_POS:
-			return ((sensoresLDR[LDR_FRENTE_DIR] == cor_linha) && (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha));
+			return ((sensoresLDR[LDR_FRENTE_DIR] == cor_linha) || (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha));
 			break;
 		case Y_NEG:
-			return ((sensoresLDR[LDR_FRENTE_DIR] == cor_linha) && (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha));
+			return ((sensoresLDR[LDR_FRENTE_DIR] == cor_linha) || (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha));
 			break;
 		default:
 			return false;
@@ -486,8 +453,6 @@ void andaAteALinha(int eixo, int cor_linha)
 	rc_motor_brake(TODOS_OS_MOTORES);
 }
 
-
-
 void andaDistancia(float dist,int eixo)
 {
 	long long int cont_inicial_1;
@@ -501,7 +466,7 @@ void andaDistancia(float dist,int eixo)
 			cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
 			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, POTENCIA_NORMAL);
 			andaMotores(DIRECAO_X);
-			while(!acabouDeAndar(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
+			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
 			{
 				cont_atual_1 = rc_encoder_read(MOTOR_FRENTE);
 				cont_atual_2 = rc_encoder_read(MOTOR_TRAS);
@@ -514,7 +479,7 @@ void andaDistancia(float dist,int eixo)
 			cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
 			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, -POTENCIA_NORMAL);
 			andaMotores(DIRECAO_X);
-			while(!acabouDeAndar(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
+			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
 			{
 				cont_atual_1 = rc_encoder_read(MOTOR_FRENTE);
 				cont_atual_2 = rc_encoder_read(MOTOR_TRAS);
@@ -528,7 +493,7 @@ void andaDistancia(float dist,int eixo)
 			cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
 			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, POTENCIA_NORMAL);
 			andaMotores(DIRECAO_Y);
-			while(!acabouDeAndar(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
+			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
 			{
 				cont_atual_1 = rc_encoder_read(MOTOR_DIREITA);
 				cont_atual_2 = rc_encoder_read(MOTOR_ESQUERDA);
@@ -541,7 +506,7 @@ void andaDistancia(float dist,int eixo)
 			cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
 			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, -POTENCIA_NORMAL);
 			andaMotores(DIRECAO_Y);
-			while(!acabouDeAndar(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
+			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
 			{
 				cont_atual_1 = rc_encoder_read(MOTOR_DIREITA);
 				cont_atual_2 = rc_encoder_read(MOTOR_ESQUERDA);
