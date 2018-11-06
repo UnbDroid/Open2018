@@ -196,7 +196,7 @@ using namespace std;
 
 /*-----------definicoes de estrategia------------*/
 	float anguloAlinhamentoPorUS(float us_dir, float us_esq);
-
+	
 /*------------------------------------------*/
 
 int main () 
@@ -299,7 +299,56 @@ void controleVel(int motor)
 	prevtime = micros();
 }
 */
+void encaixaALinhaEntreOsSensores(int eixo, int cor_linha)
+{	
+	switch(eixo)
+	{
+		case X_POS:		
+			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, POTENCIA_NORMAL);
+			andaMotores(DIRECAO_X);
+			while(!chegouNaLinhaPorLDR(eixo, cor_linha) && running)
+			{
+				lerSensores(SENSORES_CHASSIS);
+				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
+				andaMotores(DIRECAO_X);
+			}
+			break;
+		case X_NEG:
+			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, -POTENCIA_NORMAL);
+			andaMotores(DIRECAO_X);
+			while(!chegouNaLinhaPorLDR(eixo, cor_linha) && running)
+			{
+				lerSensores(SENSORES_CHASSIS);
+				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
+				andaMotores(DIRECAO_X);
+			}
+			break;
+		case Y_POS:
+			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, POTENCIA_NORMAL);
+			andaMotores(DIRECAO_Y);
+			while(!chegouNaLinhaPorLDR(eixo, cor_linha) && running)
+			{
+				lerSensores(SENSORES_CHASSIS);
+				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, POTENCIA_NORMAL);
+				andaMotores(DIRECAO_Y);
+			}
+			break;
+		case Y_NEG:
+			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, -POTENCIA_NORMAL);
+			andaMotores(DIRECAO_Y);
+			while(!chegouNaLinhaPorLDR(eixo, cor_linha) && running)
+			{
+				lerSensores(SENSORES_CHASSIS);
+				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, -POTENCIA_NORMAL);
+				andaMotores(DIRECAO_Y);
+			}
+			break;
+		default:
+			break;
 
+	}
+	rc_motor_brake(TODOS_OS_MOTORES);
+}
 float anguloAlinhamentoPorUS(float us_dir, float us_esq)
 {
 	return atan2((us_dir - us_esq),DISTANCIA_ENTRE_US);
@@ -324,7 +373,6 @@ void fechaServos()
 	rc_servo_send_pulse_normalized(SERVO_3, 0);
 	rc_servo_send_pulse_normalized(SERVO_4, 0);
 }
-
 
 void abreServos()
 { 
