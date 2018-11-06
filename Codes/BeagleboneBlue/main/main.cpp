@@ -98,6 +98,7 @@ using namespace std;
 	#define VERDE 3 
 	#define AZUL 4
 	#define VERMELHO 5
+	
 	void imprimeLeituras(int sensores);
 	void lerSensores(int sensores);
 
@@ -164,6 +165,10 @@ using namespace std;
 	int inicializa();
 	void andaDistancia(float dist, int eixo);
 	bool acabouDeAndar(long long int cont1, long long int cont2, float dist);
+	bool chegouNaLinhaPorLDR(int eixo, int cor_linha);
+	void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot);
+	void andaAteALinha(int eixo, int cor_linha);
+	float transformaAnguloEmErroEnc(float angulo);
 	float velocidade_ref[4];
 	float pot_ref[4];
 	float orientacao_z;
@@ -181,13 +186,18 @@ using namespace std;
 	#define EIXO_HORIZONTAL 1
 	#define EIXO_VERTICAL 2
 
-	#define MAXIMO_GARRA_Z 1
+	#define MAXIMO_GARRA_Z 118
 	#define MAXIMO_GARRA_R 1
-	
+
 	#define NORMALIZA_GARRA_Z MAXIMO_GARRA_Z/256
 	#define NORMALIZA_GARRA_R MAXIMO_GARRA_R/256
 
-/*-----------------------------------------------*/
+	#define DISTANCIA_ENTRE_US 10.8f
+
+/*-----------definicoes de estrategia------------*/
+	float anguloAlinhamentoPorUS(float us_dir, float us_esq);
+
+/*------------------------------------------*/
 
 int main () 
 {
@@ -290,6 +300,11 @@ void controleVel(int motor)
 }
 */
 
+float anguloAlinhamentoPorUS(float us_dir, float us_esq)
+{
+	return atan2((us_dir - us_esq),DISTANCIA_ENTRE_US);
+}
+
 bool acabouDeAndar(long long int cont1, long long int cont2, float dist)
 {
 	return ((abs(cont1-cont2)< QUANTIDADE_PULSOS_PRECISAO) && abs(cont1)>=abs(round(dist*QUANTIDADE_PULSOS_POR_REV/DIAMETRO_DA_RODA)))? true : false;
@@ -341,7 +356,38 @@ bool chegouNaLinhaPorLDR(int eixo, int cor_linha)
 	}
 }
 
-void andaDoAteLinha(int eixo, int cor_linha)
+float transformaAnguloEmErroEnc(float angulo)
+{
+	return (float)((QUANTIDADE_PULSOS_POR_REV*4*sin((float)((float)RAD_TO_DEG*angulo)/2))/DIAMETRO_DA_RODA);
+}
+
+void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot)
+{
+	static float erro, integral, integral_passado, erro_passado;
+	static long long int tempo_passado;
+	float  correcao;
+	long long int  dt;
+	if(inicio){
+		erro = 0;
+		tempo_passado = 0;
+		integral = 0;
+		integral_passado = 0;
+		erro_passado = 0;
+		pot_ref[motor_a-1] = pot;
+		pot_ref[motor_b-1] = pot;
+	}
+	erro = (float)((1-PRIORIDADE_GIRO_FUSAO)*(rc_encoder_read(motor_a) - rc_encoder_read(motor_b))  + (PRIORIDADE_GIRO_FUSAO)*transformaAnguloEmErroEnc(orientacao_z)); //fusao entre encoder e giroscopio para andar reto com prioridade maior pro giroscopio
+	dt = rc_timespec_to_micros(ts_geral) - tempo_passado;
+	integral = integral_passado + (erro_passado / 1000000) * dt;
+	integral_passado = integral;
+	erro_passado = erro;
+	correcao = erro * KP + KI * integral;
+	pot_ref[motor_a-1] = pot_ref[motor_a-1] - correcao;
+	pot_ref[motor_b-1] = pot_ref[motor_b-1] + correcao;
+	tempo_passado = rc_timespec_to_micros(ts_geral);
+}
+
+void andaAteALinha(int eixo, int cor_linha)
 {
 	switch(eixo)
 	{
@@ -392,36 +438,7 @@ void andaDoAteLinha(int eixo, int cor_linha)
 	rc_motor_brake(TODOS_OS_MOTORES);
 }
 
-double transformaAnguloEmErroEnc(float angulo)
-{
-	return (QUANTIDADE_PULSOS_POR_REV*4*sin((RAD_TO_DEG*orientacao_z)/2))/DIAMETRO_DA_RODA;
-}
 
-void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot)
-{
-	static float erro, integral, integral_passado, erro_passado;
-	static long long int tempo_passado;
-	float  correcao;
-	long long int  dt;
-	if(inicio){
-		erro = 0;
-		tempo_passado = 0;
-		integral = 0;
-		integral_passado = 0;
-		erro_passado = 0;
-		pot_ref[motor_a-1] = pot;
-		pot_ref[motor_b-1] = pot;
-	}
-	erro = (float)((1-PRIORIDADE_GIRO_FUSAO)*(rc_encoder_read(motor_a) - rc_encoder_read(motor_b))  + (PRIORIDADE_GIRO_FUSAO)*transformaAnguloEmErroEnc(orientacao_z)); //fusao entre encoder e giroscopio para andar reto com prioridade maior pro giroscopio
-	dt = rc_timespec_to_micros(ts_geral) - tempo_passado;
-	integral = integral_passado + (erro_passado / 1000000) * dt;
-	integral_passado = integral;
-	erro_passado = erro;
-	correcao = erro * KP + KI * integral;
-	pot_ref[motor_a-1] = pot_ref[motor_a-1] - correcao;
-	pot_ref[motor_b-1] = pot_ref[motor_b-1] + correcao;
-	tempo_passado = rc_timespec_to_micros(ts_geral);
-}
 
 void andaDistancia(float dist,int eixo)
 {
