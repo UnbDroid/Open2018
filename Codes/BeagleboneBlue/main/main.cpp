@@ -300,15 +300,156 @@ void controleVel(int motor)
 	prevtime = micros();
 }
 */
-bool seAlinhou(int eixo,int cor_linha)
+
+void setaPotencia(int motor_a, int pot)//SKIRA
 {
-	/////SKIRA
-	return true;
+	pot_ref[motor_a-1] = pot;
+}
+
+void andaMotor(int motor)//SKIRA
+{
+	switch(motor)
+	{
+		case MOTOR_FRENTE:
+			if(abs(pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) 
+				rc_motor_set(MOTOR_FRENTE,pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA);
+			else
+				rc_motor_set(MOTOR_FRENTE,(abs(pot_ref[MOTOR_FRENTE-1])/(pot_ref[MOTOR_FRENTE-1]))*DUTY_CYCLE_MAXIMO);
+			break;
+		case MOTOR_TRAS:
+			if(abs(pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
+				rc_motor_set(MOTOR_TRAS,pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA);
+			else
+				rc_motor_set(MOTOR_TRAS,(abs(pot_ref[MOTOR_TRAS-1])/(pot_ref[MOTOR_TRAS-1]))*DUTY_CYCLE_MAXIMO);
+			break;
+		case MOTOR_DIREITA:
+				if(abs(pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
+					rc_motor_set(MOTOR_DIREITA,pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA);
+				else
+					rc_motor_set(MOTOR_DIREITA,(abs(pot_ref[MOTOR_DIREITA-1])/(pot_ref[MOTOR_DIREITA-1]))*DUTY_CYCLE_MAXIMO);
+			break;
+		case MOTOR_ESQUERDA:
+			if(abs(pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)	
+				rc_motor_set(MOTOR_ESQUERDA,pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA);
+			else
+				rc_motor_set(MOTOR_ESQUERDA,(abs(pot_ref[MOTOR_ESQUERDA-1])/(pot_ref[MOTOR_ESQUERDA-1]))*DUTY_CYCLE_MAXIMO);
+			break;
+	}
+}
+
+bool seAlinhou(int eixo,int cor_linha)//SKIRA
+{
+		
+	switch(eixo){
+		case X_POS:
+			bool condAl1 = (sensoresLDR[LDR_DIREITA_BAIXO] == cor_linha) && (sensoresLDR[LDR_DIREITA_CIMA] == cor_linha);
+			return condAl1;
+			break;
+		case X_NEG:
+			bool condAl2 = (sensoresLDR[LDR_ESQUERDA_BAIXO] == cor_linha) && (sensoresLDR[LDR_ESQUERDA_CIMA] == cor_linha);
+			return condAl2;
+			break;
+		case Y_POS:
+			bool condAl3 = (sensoresLDR[LDR_FRENTE_DIR] == cor_linha) && (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha);
+			return condAl3;
+			break;
+		case Y_NEG:
+			bool condAl4 = (sensoresLDR[LDR_TRAS_DIR] == cor_linha) && (sensoresLDR[LDR_TRAS_ESQ] == cor_linha);
+			return condAl4;
+			break;
+		default:
+			return false;
+			break;
+	}
+}
+
+bool seAlinhe(int eixo,int cor_linha)//SKIRA
+{
+	int mot_a=1; //random init values
+	int mot_b=1; //random init values 
+	int s1 = 0;  //random init values
+	int s2 = 0;  //random init values
+	int potA = 0, potB = 0;
+	int revEixo = 0;
+
+	bool cond_S1_nS2 = false;
+	bool cond_nS1_S2 = false;
+	bool cond_nS1_nS2 = false;
+
+
+	switch(eixo){
+		case X_POS:
+			mot_a = MOTOR_FRENTE;
+			mot_b = MOTOR_TRAS;
+			s1 = LDR_DIREITA_CIMA;
+			s2 = LDR_DIREITA_BAIXO;
+			//revEixo = X_NEG;
+			break;
+		case X_NEG:
+			mot_a = MOTOR_TRAS;
+			mot_b = MOTOR_FRENTE;
+			s1 = LDR_ESQUERDA_BAIXO;
+			s2 = LDR_ESQUERDA_CIMA;
+			//revEixo = X_POS;
+			break;
+		case Y_POS:
+			mot_a = MOTOR_ESQUERDA;
+			mot_b = MOTOR_DIREITA;
+			s1 = LDR_FRENTE_ESQ;
+			s2 = LDR_FRENTE_DIR;
+			//revEixo = Y_NEG;
+			break;
+		case Y_NEG:
+			mot_a = MOTOR_DIREITA;
+			mot_b = MOTOR_ESQUERDA;
+			s1 = LDR_TRAS_DIR;
+			s2 = LDR_TRAS_ESQ;
+			//revEixo = Y_POS;
+			break;
+		default:
+			break;
+	}
+	while(!seAlinhou(eixo, cor_linha) && running)
+	{
+		lerSensores(SENSORES_CHASSIS);
+
+		cond_S1_nS2 = (sensoresLDR[s1] == cor_linha)&&(sensoresLDR[s2] != cor_linha);
+		cond_nS1_S2 = (sensoresLDR[s2] == cor_linha)&&(sensoresLDR[s1] != cor_linha);
+		cond_nS1_nS2 = (sensoresLDR[s2] != cor_linha)&&(sensoresLDR[s1] != cor_linha);
+
+		if(cond_S1_nS2)
+		{
+			potA = 0;
+			potB = POTENCIA_FRACA;
+		}
+		else if(cond_nS1_S2){
+			potB = 0;
+			potA = POTENCIA_FRACA;
+		}
+		else if(cond_nS1_nS2)
+		{
+			andaAteALinha(eixo, cor_linha);
+		}
+		setaPotencia(mot_a, potA);
+		setaPotencia(mot_b, potB);
+		andaMotor(mot_a);
+		andaMotor(mot_b);
+	}
+
+	////Fine ajustments
+	//andaAteALinha(eixo, cor_linha);
+	//andaDistancia(5, revEixo);
+
+
+	rc_motor_brake(TODOS_OS_MOTORES);
+	return false;
 }
 
 
-void encaixaAlinhaEntreSensores(int eixo,int cor_linha)
+void encaixaALinhaEntreSensores(int eixo,int cor_linha)
 {
+	
+
 	/////SKIRA (considera que pode tocar no barco
 }
 
@@ -363,7 +504,7 @@ bool chegouNaLinhaPorLDR(int eixo, int cor_linha)
 			return ((sensoresLDR[LDR_FRENTE_DIR] == cor_linha) || (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha));
 			break;
 		case Y_NEG:
-			return ((sensoresLDR[LDR_FRENTE_DIR] == cor_linha) || (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha));
+			return ((sensoresLDR[LDR_TRAS_DIR] == cor_linha) || (sensoresLDR[LDR_TRAS_ESQ] == cor_linha));
 			break;
 		default:
 			return false;
@@ -525,6 +666,20 @@ void andaMotores(int direcao)
 {
 	if (direcao == DIRECAO_X)
 	{
+		andaMotor(MOTOR_FRENTE);
+		andaMotor(MOTOR_TRAS);
+	
+	}else if(direcao == DIRECAO_Y)
+	{
+		andaMotor(MOTOR_DIREITA);
+		andaMotor(MOTOR_ESQUERDA);
+	}
+}
+
+void andaMotores(int direcao) //DEPRECATED
+{
+	if (direcao == DIRECAO_X)
+	{
 		if(abs(pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) 
 			rc_motor_set(MOTOR_FRENTE,pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA);
 		else
@@ -536,6 +691,7 @@ void andaMotores(int direcao)
 			rc_motor_set(MOTOR_TRAS,(abs(pot_ref[MOTOR_TRAS-1])/(pot_ref[MOTOR_TRAS-1]))*DUTY_CYCLE_MAXIMO);
 	}else if(direcao == DIRECAO_Y)
 	{
+		
 		if(abs(pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
 			rc_motor_set(MOTOR_DIREITA,pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA);
 		else
