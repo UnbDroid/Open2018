@@ -32,7 +32,7 @@
 #define BLUE 2
 
 //const int out[n_sensors] = {Pino7_TCS1, Pino7_TCS2};   
-Sensor s[4];
+TCS s[4];
 
 int incomingByte = 0;  
 
@@ -47,10 +47,10 @@ void setup()
 	pinMode(S3, OUTPUT);
 	digitalWrite(S0, HIGH);  
 	digitalWrite(S1, LOW);  
-	s[0].setPins(S0, S1, S2, S3, Pino7_TCS1, 0);
-	s[1].setPins(S0, S1, S2, S3, Pino7_TCS2, 1);
-	s[2].setPins(S0, S1, S2, S3, Pino7_TCS3, 2);
-	s[3].setPins(S0, S1, S2, S3, Pino7_TCS4, 3);
+	s[0].setPins(S2, S3, Pino7_TCS1, 0);
+	s[1].setPins(S2, S3, Pino7_TCS2, 1);
+	s[2].setPins(S2, S3, Pino7_TCS3, 2);
+	s[3].setPins(S2, S3, Pino7_TCS4, 3);
 	for(i = 0; i < 4; i++)
 		s[i].getFromEEPROM(); // It doesn't do anything at all, but it can be implemented.
 	Serial.begin(9600);  
@@ -62,17 +62,17 @@ void setup()
     
 void loop()
 {
-	int i;
-	int cores_pegas[4];
-	for(i = 0; i < 4; i++)
-	{
-		cores_pegas[i] = s[i].WhatIsTheColor(); // The number gotten is 0, 1, 2 or 3.
-												// 0 = black
-												// 1 = white
-												// 2 = blue
-												// 3 = green
-		sensors[10+i] = "0" + cores_pegas[i];
-	}
+  	int i;
+  	int cores_pegas[4];
+  	for(i = 0; i < 4; i++)
+  	{
+  		cores_pegas[i] = s[i].WhatIsTheColor(); // The number gotten is 0, 1, 2 or 3.
+  												// 0 = black
+  												// 1 = white
+  												// 2 = blue
+  												// 3 = green
+  		sensors[10+i] = "0" + cores_pegas[i];
+  	}
 
 
 }
