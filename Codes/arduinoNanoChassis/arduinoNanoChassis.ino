@@ -2,6 +2,7 @@
 //os ldrs sao as casas 2,3,4,5,6,7,8,9 deste vetor
 //os sensores de cor sao as casas 10,11,12,13
 //o vetor de comunicacao comeca com o byte I e termina com o byte F
+#include "EEPROM.h"
 #include "lib.h"
 
 #define Pino1_TCS 7 	// S0 // Digital 7
@@ -39,8 +40,10 @@ int LDR_color[8];
 Color cor_lida[4];
 int ldr_lido;
 int lidos[8], comFiltro[8];
-int portas[8] = {A0, A2, A1, A3, A4, A5, A6, A7};
+int portas[8] = {A0, A1, A2, A3, A4, A5, A6, A7};
 
+// Ordem
+// A4, A2, A3, A0, A1, A7, A5, A6
 
 void setup (void)
 {
@@ -66,8 +69,8 @@ void setup (void)
 
 	// Definicao dos LDRs
 	l[0].setPorta(A0);
-	l[1].setPorta(A2);
-	l[2].setPorta(A1);
+	l[1].setPorta(A1);
+	l[2].setPorta(A2);
 	l[3].setPorta(A3);
 	l[4].setPorta(A4);
 	l[5].setPorta(A5);
@@ -75,12 +78,47 @@ void setup (void)
 	l[7].setPorta(A7);
 	for(i = 0; i < 8; i++)
 	{
-		l[i].set_qr(4, 1023);
+		l[i].set_qr(1, 1000);
+		
 	}
-        Serial.begin(9600);
+	for(i = 0; i < 4; i++) // Capturar os 4 sensores de cor
+	{
+		s[i].getFromEEPROM(24*i);	
+	}
+    Serial.begin(9600);
+    imprime_tudo_pego();
+    delay(15000);
 }
 
-
+void imprime_tudo_pego()
+{
+	int i, j;
+	for(i = 0; i < 4; i++) // 4 sensores
+	{
+		for(j = 0; j < 4; j++) // 4 cores no chao
+		{
+			Serial.print("Sensor ");
+			Serial.print(i);
+			Serial.print(" cor ");
+			print_color(j);
+			Serial.println();
+			Serial.print("med: (");
+			Serial.print(s[i].c[j].med.r);
+			Serial.print(", ");
+			Serial.print(s[i].c[j].med.g);
+			Serial.print(", ");
+			Serial.print(s[i].c[j].med.b);
+			Serial.println(")");		
+			Serial.print("std: (");
+			Serial.print(s[i].c[j].std.r);
+			Serial.print(", ");
+			Serial.print(s[i].c[j].std.g);
+			Serial.print(", ");
+			Serial.print(s[i].c[j].std.b);
+			Serial.println(")");			
+		}
+	}
+}
 
 
 // SPI interrupt routine
@@ -171,24 +209,79 @@ void imprime_TCSs()
 	}
 }
 
+void print_color(int n)
+{
+	if(n == 0)
+		Serial.print("Black");
+	else if(n == 1)
+		Serial.print("White");
+	else if(n == 2)
+		Serial.print("Green");
+	else
+		Serial.print("Blue");
+}
+
+void imprime_tratados()
+{
+	Serial.println("TCS\t1\t2\t3\t4");
+	Serial.print("\t");
+	for(i = 0; i < 4; i++)
+	{
+		print_color(cores_pegas[i]);
+		Serial.print('\t');
+	}
+	Serial.println("");
+}
+
+void imprime_medias()
+{
+	int valor, j;
+	Serial.println("TCS\t1\t2\t3\t4");
+	for(i = 0; i < 4; i++)
+	{
+		if(i == 0)
+			Serial.print("BK\t");
+		else if(i == 1)
+			Serial.print("WH\t");
+		else if(i == 2)
+			Serial.print("GR\t");
+		else
+			Serial.print("BU\t");
+
+		for(j = 0; j < 4; j++)
+		{
+			valor = s[i].c[j].distance(cor_lida[i]);
+			Serial.print(valor);
+			Serial.print("\t");
+		}
+		Serial.println("");
+	}
+	
+}
+
 void loop (void)
 {
 	// The number of the colors are BLACK = 0, WHITE = 1, GREEN = 2, BLUE = 3;
-	for(i = 0; i < 8; i++)
-	{
-		lidos[i] = analogRead(portas[i]);
-		comFiltro[i] = l[i].read();
-		//LDR_color[i] = l[i].identify_color(ldr_lido);	// The number gotten is 0, 1 or 2. 
+	int j;
+	//for(i = 0; i < 8; i++)
+	// {
+		// lidos[i] = analogRead(portas[i]);
+		// LDR_color[i] = l[i].identify_color(lidos[i]);	// The number gotten is 0, 1 or 2. 
+		
+		//comFiltro[i] = l[i].read();
 		//sensors[2+i] = '0' + LDR_color[i];
-	}
-	imprime_LDRs();
+	// }
+	// imprime_LDRs();
 	for(i = 0; i < 4; i++)
 	{
 		cor_lida[i] = s[i].read();
-		
-		// cores_pegas[i] = s[i].identify_color(cor_lida[i]);	// The number gotten is 0, 1, 2 or 3.
+		cores_pegas[i] = s[i].identify_color(cor_lida[i]);	// The number gotten is 0, 1, 2 or 3.
 		// sensors[10+i] = '0' + cores_pegas[i];
 	}
 	imprime_TCSs();
-	delay(500);
+	Serial.println("\n");
+	imprime_tratados();
+	Serial.println("\n");
+	imprime_medias();
+	delay(1000);
 }
