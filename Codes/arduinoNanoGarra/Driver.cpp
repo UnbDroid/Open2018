@@ -10,7 +10,7 @@ char upper(char c){
 	}
 	return c;
 }
-
+     
 int cmp_str(char* a, char* b){
 	int i;
 	for(i=0;i<8;i++){					// 7 chars limit = DRV8825
@@ -19,16 +19,16 @@ int cmp_str(char* a, char* b){
 		}
 		else {
 			if(a[i] == '\0'){
-				return 1;
+				return 1;		// They are the same
 			};
 		};
 	};
-	return 0;
+	return 0;	// They are not the same
 }
 
-// Function to verify if pin is in valid range
+// Function to verify if pin is in valid range, accepts digital and analog
 int is_set(uint8_t pin){
-	if(pin>=0 && pin<14){
+	if(pin>=2 && pin<=21){ // 2 through 13 are digital pins, A0 through A7 (analog) are seen as 14 through 21
 		return 1;
 	};
 	return 0;
@@ -37,15 +37,20 @@ int is_set(uint8_t pin){
 // Check if pin is output enabled
 int output_enabled(uint8_t pin){
 	if(pin<=7){
-		if(DDRD & (1 << pin)){		// Check if it is set as OUTPUT, ports 0 to 7
+		if(DDRD & (1 << pin)){			// Check if it is set as OUTPUT, ports 0 to 7
 			return 1;		
 		}; 
 	}
-	else {
+	else if(pin>7 && pin<14){
 		if(DDRB & (1 << (pin-8))){		// Check if it is set as OUTPUT, ports 8 to 13
 			return 1;
 		};
-	};
+	}
+	else {								// Check analog defined as output
+		if(DDRC & (1 << (pin-13))){
+			return 1;
+		};
+	}
 	return 0;	
 }
 
@@ -56,6 +61,7 @@ Driver::Driver(){
 	this->_axis = 'X';	// Set axis as x
 	this->_pos = 0;
 	this->_diameter = 1;
+	this->_end = 255;
 }
 
 // Second constructor, string parameter
@@ -71,6 +77,7 @@ Driver::Driver(char* str){
 	this->_axis = 'X';
 	this->_pos = 0;
 	this->_diameter = 1;
+	this->_end = 255;
 }
 
 // Simply return the type, for debugging
@@ -79,21 +86,21 @@ uint8_t Driver::Type(){
 }
 
 void Driver::set_activation_pins(int RST, int SLP, int EN){
-	if(RST>=0 && RST<14){
+	if(RST>=2 && RST<=21){
 		this->_RST = uint8_t(RST);
 	}
 	else{
 		this->_RST = 255;	// Equivalent to -1 in int, not set, assuming the user pulled it to ground or VCC
 	};
 
-	if(SLP>=0 && SLP<14){	
+	if(SLP>=2 && SLP<=21){	
 		this->_SLP = uint8_t(SLP);
 	}
 	else{
 		this->_SLP = 255;	// Equivalent to -1 in int, not set, assuming the user pulled it to ground or VCC
 	};
 	
-	if(EN>=0 && EN<14){	
+	if(EN>=2 && EN<=21){	
 		this->_EN = uint8_t(EN);
 	}
 	else{
@@ -102,14 +109,14 @@ void Driver::set_activation_pins(int RST, int SLP, int EN){
 }
 
 void Driver::set_step_and_dir_pins(int STP, int DIR){
-	if(STP>=0 && STP<14){
+	if(STP>=2 && STP<=21){
 		this->_STP = uint8_t(STP);
 	}
 	else{
 		this->_STP = 255;
 	};
 	
-	if(DIR>=0 && DIR<14){
+	if(DIR>=2 && DIR<=21){
 		this->_DIR = uint8_t(DIR);
 	}
 	else{
@@ -118,21 +125,21 @@ void Driver::set_step_and_dir_pins(int STP, int DIR){
 }
 
 void Driver::set_pins_resolution(int M0, int M1, int M2){
-	if(M0>=0 && M0<14){
+	if(M0>=2 && M0<=21){
 		this->_M0 = uint8_t(M0);
 	}
 	else{
 		this->_M0 = 255;
 	};
 	
-	if(M1>=0 && M1<14){
+	if(M1>=2 && M1<=21){
 		this->_M1 = uint8_t(M1);
 	}
 	else{
 		this->_M1 = 255;
 	};	
 	
-	if(M2>=0 && M2<14){
+	if(M2>=2 && M2<=21){
 		this->_M2 = uint8_t(M2);
 	}
 	else{
@@ -144,9 +151,11 @@ void Driver::start(){
 	// First define the activation pins as output
 	if(is_set(this->_RST)){
 		pinMode(this->_RST, OUTPUT);
+		digitalWrite(this->_RST, HIGH);
 	};
 	if(is_set(this->_SLP)){
 		pinMode(this->_SLP, OUTPUT);
+		digitalWrite(this->_SLP, HIGH);
 	};
 	if(is_set(this->_EN)){
 		pinMode(this->_EN, OUTPUT);
@@ -173,19 +182,14 @@ void Driver::start(){
 }
 
 void Driver::set_direction(int dir){
+	if(!is_set(this->_DIR) || !output_enabled(this->_DIR))
+		return;
+
 	if(!dir){
-		if(is_set(this->_DIR)){
-			if(output_enabled(this->_DIR)){
-				digitalWrite(this->_DIR, LOW);
-			};
-		};
+		digitalWrite(this->_DIR, LOW);
 	}
 	else {
-		if(is_set(this->_DIR)){
-			if(output_enabled(this->_DIR)){
-				digitalWrite(this->_DIR, HIGH);
-			};
-		};	
+		digitalWrite(this->_DIR, HIGH);	
 	};
 }
 
@@ -269,8 +273,10 @@ void Driver::set_resolution(int res){
 
 void Driver::send_pulses(int steps){
 	// Check if is valid and output enabled
-	if(!is_set(this->_STP) || !output_enabled(this->_STP))
+	if(!is_set(this->_STP) || !output_enabled(this->_STP)){
 		return;
+		digitalWrite(8, HIGH);
+	};
 	
 	// The next line might not even be necessary, but it does not hurt to be secure
 	delayMicroseconds(1);	// 200ns for A4988 and 650ns for DRV8825, for security reasons, use 1000ns
@@ -285,10 +291,15 @@ void Driver::send_pulses(int steps){
 	int i;
 	
 	for(i=0;i<steps;i++){
-		digitalWrite(this->_STP, HIGH);
-		delay(this->_period/2);
-		digitalWrite(this->_STP, LOW);
-		delay(this->_period/2);
+		if(!(this->locked())){				
+			digitalWrite(this->_STP, HIGH);
+			delay(this->_period/2);
+			digitalWrite(this->_STP, LOW);
+			delay(this->_period/2);
+		}
+		else {
+			break;
+		};
 	};	
 }
 
@@ -306,6 +317,18 @@ void Driver::set_speed(float SPS){		// Speed input as Steps Per Second
 		if(this->_period < 2){
 			this->_period = 2;
 		};
+	};
+}
+
+void Driver::start_end_switch(uint8_t pin){
+	// First check if it is a valid input pin
+	if(pin>=2 && pin<=21){
+		this->_end = pin;
+		// Set the pin as INPUT
+		pinMode(this->_end, INPUT);
+	}
+	else{
+		this->_end = 255;
 	};
 }
 
@@ -350,12 +373,16 @@ int Driver::calculate_pulses(float orig, float dest){
 	return ((dest-orig)/(this->_diameter/2)*(180/3.1415926535))/this->_resolution; 	
 }
 
-void Driver::move(char mov='r', float dist=0.0){
+void Driver::move(char mov/*='r'*/, float dist/*=0.0*/){
 	int n_pulses = 0;
 	
 	if(mov == 'a'){
 		// Absolute movement, goes to specific position
 		n_pulses = this->calculate_pulses(this->_pos, dist);
+		if(dist < 1e-6){	// Security, precision protects against misinterpretation of floating point
+			this->zero();
+			n_pulses = 0;
+		}
 		this->_pos = dist;
 	}
 	else {
@@ -388,12 +415,18 @@ void move_together(Driver &drv_1, float dist_1, Driver &drv_2, float dist_2, cha
 			return;
 	};
 
+	int zero_1 = 0, zero_2 = 0;
+
 	int pulses_1, pulses_2;
 	
 	// Relative or absolute movement
 	if(mov=='a'){
+		if(dist_1 < 1e-6)
+			zero_1 = 1;
 		pulses_1 = drv_1.calculate_pulses(drv_1._pos, dist_1);
 		drv_1._pos = dist_1;
+		if(dist_2 < 1e-6)
+			zero_2 = 1;
 		pulses_2 = drv_2.calculate_pulses(drv_2._pos, dist_2);
 		drv_2._pos = dist_2;
 	}
@@ -445,18 +478,90 @@ void move_together(Driver &drv_1, float dist_1, Driver &drv_2, float dist_2, cha
 		time_1 = millis();
 		time_2 = time_1;
 		if((time_1 - old_1 >= hp_1) && pulses_1){
-			digitalWrite(drv_1._STP, step_1);
-			if(step_1)
-				pulses_1--;
-			step_1 = !step_1;
+			if(!drv_1.locked()){
+				digitalWrite(drv_1._STP, step_1);
+				if(step_1)
+					pulses_1--;
+				step_1 = !step_1;
+			}
+			else {
+				pulses_1 = 0;	// Does not allow any more steps
+				zero_1 = 1;
+			};
 			old_1 = millis();
 		};
 		if((time_2 - old_2 >= hp_2) && pulses_2){
-			digitalWrite(drv_2._STP, step_2);
-			if(step_2)
-				pulses_2--;
-			step_2 = !step_2;
+			if(!drv_2.locked()){
+				digitalWrite(drv_2._STP, step_2);
+				if(step_2)
+					pulses_2--;
+				step_2 = !step_2;
+			}
+			else {
+				pulses_2 = 0;	// Does not allow any more steps
+				zero_2 = 1;
+			};
 			old_2 = millis();
 		};
-	};		
+	};
+	
+	if(zero_1 == 1){
+		drv_1.move('a', 0);
+	};
+	if(zero_2 == 1){
+		drv_2.move('a', 0);
+	};
+}
+
+uint8_t return_value(uint8_t pin){
+	return pin;
+} 
+
+int read(uint8_t pin){
+	if(pin<=13){
+		return digitalRead(pin);
+	}
+	else {
+		int read = analogRead(pin);
+		if(read >=1000)
+			return 1;
+		else
+			return 0;	
+	};
+}
+
+int Driver::locked(){
+	uint8_t pin = this->_end;
+	if(!is_set(pin)){ // If it wasn't initialized or initialized wrong
+		return 0;	// Tells that the motor won't move if a end switch is not defined
+	}
+	
+	int reading = read(pin);
+	
+	return reading;
+	
+}
+
+void Driver::zero(){
+	this->set_direction(0);
+	
+	delay(this->_period/2);		// Wait before sending a HIGH
+	
+	while(!this->locked()){
+		digitalWrite(this->_STP, HIGH);
+		delay(this->_period/2);
+		digitalWrite(this->_STP, LOW);
+		delay(this->_period/2);		
+	};
+	
+	delay(500);
+	
+	this->set_direction(1);
+	while(this->locked()){
+		digitalWrite(this->_STP, HIGH);
+		delay(this->_period/2);
+		digitalWrite(this->_STP, LOW);
+		delay(this->_period/2);		
+	};	
+	
 }
