@@ -18,6 +18,7 @@ extern "C" {
 	#include <rc/spi.h>
 	#include <rc/servo.h>
 	#include <rc/adc.h>
+	#include <rc/cpu.h>
 }
 
 using namespace std;
@@ -123,7 +124,7 @@ using namespace std;
 
 	#define TODOS_OS_MOTORES 0
 
-	#define DUTY_CYCLE_MAXIMO 0.725f //normaliza potencia
+	#define DUTY_CYCLE_MAXIMO 0.5f //normaliza potencia
 	#define NORMALIZA_POTENCIA DUTY_CYCLE_MAXIMO/100
 
 	#define DIRECAO_Y 1
@@ -170,6 +171,10 @@ using namespace std;
 	void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot);
 	void andaAteALinha(int eixo, int cor_linha);
 	float transformaAnguloEmErroEnc(float angulo);
+	bool seAlinhou(int eixo,int cor_linha);//SKIRA
+	bool seAlinhe(int eixo,int cor_linha);
+	void setaPotencia(int motor_a, int pot);
+	void andaMotor(int motor);
 	float velocidade_ref[4];
 	float pot_ref[4];
 	float orientacao_z;
@@ -210,21 +215,22 @@ int main ()
 /* 	cout<<"tentando andar "<<endl;
 	andaDistancia(20, X_POS);	
 	string retorno = string(SpiComm(0,(char *)"s",16));
-	cout << retorno <<endl<<retorno.length()<<endl;
-	float pot = 50;
-	rc_motor_set(MOTOR_DIREITA,pot*NORMALIZA_POTENCIA);
-	rc_motor_set(MOTOR_FRENTE,-POTENCIA_NORMAL*NORMALIZA_POTENCIA);
-	rc_motor_set(MOTOR_TRAS,POTENCIA_NORMAL*NORMALIZA_POTENCIA);
-	rc_motor_set(MOTOR_ESQUERDA,-pot*NORMALIZA_POTENCIA);
- */
+	cout << retorno <<endl<<retorno.length()<<endl;*/
+	// float pot = 50;
+	// rc_motor_set(MOTOR_DIREITA,pot*NORMALIZA_POTENCIA);
+	// rc_motor_set(MOTOR_FRENTE,-POTENCIA_NORMAL*NORMALIZA_POTENCIA);
+	// rc_motor_set(MOTOR_TRAS,POTENCIA_NORMAL*NORMALIZA_POTENCIA);
+	// rc_motor_set(MOTOR_ESQUERDA,-pot*NORMALIZA_POTENCIA);
+	pot_ref[MOTOR_ESQUERDA-1] = 50;
+	andaMotor(MOTOR_ESQUERDA);
 	while(running)
 	{
 		rc_usleep(500000);
 		cout << orientacao_z << endl;
 	}
 
-/* 	rc_motor_brake(TODOS_OS_MOTORES);
-
+ 	rc_motor_brake(TODOS_OS_MOTORES);
+/*
 	lerSensores(SENSORES_US);
 	imprimeLeituras(SENSORES_LDR);
 	imprimeLeituras(SENSORES_COR); */
@@ -234,7 +240,7 @@ int main ()
 int inicializa()
 {
 	signal(SIGINT, __signal_handler);
-	
+	rc_cpu_set_governor(RC_GOV_PERFORMANCE);
 	running = 1;	
 	system("config-pin p9.30 spi");
 	system("config-pin p9.31 spi_sclk");
@@ -245,7 +251,7 @@ int inicializa()
 	rc_mpu_config_t config = rc_mpu_default_config();
 	config.i2c_bus = I2C_BUS;
 	config.dmp_auto_calibrate_gyro = 1;
-	config.dmp_sample_rate = 4;
+	config.dmp_sample_rate = 200;
 	//config.enable_magnetometer = 1;
 	if(rc_mpu_calibrate_gyro_routine(config)<0){
 		cout << "Failed to complete gyro calibration\n";
@@ -267,6 +273,9 @@ int inicializa()
 
 	rc_motor_init_freq(RC_MOTOR_DEFAULT_PWM_FREQ);
 	rc_encoder_init();
+	
+	for(int i = 0; i < 4; i++)
+		pot_ref[i] = 0;
 	cout<<"terminou as inicializacoes"<<endl;
 	return 0;
 }
@@ -339,25 +348,25 @@ void andaMotor(int motor)//SKIRA
 
 bool seAlinhou(int eixo,int cor_linha)//SKIRA
 {
-		
+	bool cond = false;	
 	switch(eixo){
-		case X_POS:
-			bool condAl1 = (sensoresLDR[LDR_DIREITA_BAIXO] == cor_linha) && (sensoresLDR[LDR_DIREITA_CIMA] == cor_linha);
-			return condAl1;
+		case X_POS:{
+			cond = (sensoresLDR[LDR_DIREITA_BAIXO] == cor_linha) && (sensoresLDR[LDR_DIREITA_CIMA] == cor_linha);
+			return cond;
 			break;
-		case X_NEG:
-			bool condAl2 = (sensoresLDR[LDR_ESQUERDA_BAIXO] == cor_linha) && (sensoresLDR[LDR_ESQUERDA_CIMA] == cor_linha);
-			return condAl2;
+		}case X_NEG:{
+			cond = (sensoresLDR[LDR_ESQUERDA_BAIXO] == cor_linha) && (sensoresLDR[LDR_ESQUERDA_CIMA] == cor_linha);
+			return cond;
 			break;
-		case Y_POS:
-			bool condAl3 = (sensoresLDR[LDR_FRENTE_DIR] == cor_linha) && (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha);
-			return condAl3;
+		}case Y_POS:{
+			cond = (sensoresLDR[LDR_FRENTE_DIR] == cor_linha) && (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha);
+			return cond;
 			break;
-		case Y_NEG:
-			bool condAl4 = (sensoresLDR[LDR_TRAS_DIR] == cor_linha) && (sensoresLDR[LDR_TRAS_ESQ] == cor_linha);
-			return condAl4;
+		}case Y_NEG:{
+			cond = (sensoresLDR[LDR_TRAS_DIR] == cor_linha) && (sensoresLDR[LDR_TRAS_ESQ] == cor_linha);
+			return cond;
 			break;
-		default:
+		}default:
 			return false;
 			break;
 	}
@@ -370,7 +379,6 @@ bool seAlinhe(int eixo,int cor_linha)//SKIRA
 	int s1 = 0;  //random init values
 	int s2 = 0;  //random init values
 	int potA = 0, potB = 0;
-	int revEixo = 0;
 
 	bool cond_S1_nS2 = false;
 	bool cond_nS1_S2 = false;
@@ -676,33 +684,33 @@ void andaMotores(int direcao)
 	}
 }
 
-void andaMotores(int direcao) //DEPRECATED
-{
-	if (direcao == DIRECAO_X)
-	{
-		if(abs(pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) 
-			rc_motor_set(MOTOR_FRENTE,pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA);
-		else
-			rc_motor_set(MOTOR_FRENTE,(abs(pot_ref[MOTOR_FRENTE-1])/(pot_ref[MOTOR_FRENTE-1]))*DUTY_CYCLE_MAXIMO);
+// void andaMotores(int direcao) //DEPRECATED
+// {
+// 	if (direcao == DIRECAO_X)
+// 	{
+// 		if(abs(pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) 
+// 			rc_motor_set(MOTOR_FRENTE,pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA);
+// 		else
+// 			rc_motor_set(MOTOR_FRENTE,(abs(pot_ref[MOTOR_FRENTE-1])/(pot_ref[MOTOR_FRENTE-1]))*DUTY_CYCLE_MAXIMO);
 		
-		if(abs(pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
-			rc_motor_set(MOTOR_TRAS,pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA);
-		else
-			rc_motor_set(MOTOR_TRAS,(abs(pot_ref[MOTOR_TRAS-1])/(pot_ref[MOTOR_TRAS-1]))*DUTY_CYCLE_MAXIMO);
-	}else if(direcao == DIRECAO_Y)
-	{
+// 		if(abs(pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
+// 			rc_motor_set(MOTOR_TRAS,pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA);
+// 		else
+// 			rc_motor_set(MOTOR_TRAS,(abs(pot_ref[MOTOR_TRAS-1])/(pot_ref[MOTOR_TRAS-1]))*DUTY_CYCLE_MAXIMO);
+// 	}else if(direcao == DIRECAO_Y)
+// 	{
 		
-		if(abs(pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
-			rc_motor_set(MOTOR_DIREITA,pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA);
-		else
-			rc_motor_set(MOTOR_DIREITA,(abs(pot_ref[MOTOR_DIREITA-1])/(pot_ref[MOTOR_DIREITA-1]))*DUTY_CYCLE_MAXIMO);		
+// 		if(abs(pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
+// 			rc_motor_set(MOTOR_DIREITA,pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA);
+// 		else
+// 			rc_motor_set(MOTOR_DIREITA,(abs(pot_ref[MOTOR_DIREITA-1])/(pot_ref[MOTOR_DIREITA-1]))*DUTY_CYCLE_MAXIMO);		
 		
-		if(abs(pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)	
-			rc_motor_set(MOTOR_ESQUERDA,pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA);
-		else
-			rc_motor_set(MOTOR_ESQUERDA,(abs(pot_ref[MOTOR_ESQUERDA-1])/(pot_ref[MOTOR_ESQUERDA-1]))*DUTY_CYCLE_MAXIMO);
-	}
-}
+// 		if(abs(pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)	
+// 			rc_motor_set(MOTOR_ESQUERDA,pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA);
+// 		else
+// 			rc_motor_set(MOTOR_ESQUERDA,(abs(pot_ref[MOTOR_ESQUERDA-1])/(pot_ref[MOTOR_ESQUERDA-1]))*DUTY_CYCLE_MAXIMO);
+// 	}
+// }
 
 string SpiComm(int canal, char* dado, int tamanho_resposta)
 {
