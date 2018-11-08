@@ -24,9 +24,12 @@ using namespace std;
 #define CHIP_1 1
 #define CHIP_2 3
 
-// Pin numbersin the respective chipset
+// Pin numbers in the respective chipset
 #define PIN_1 17
 #define PIN_2 17
+
+#define GPIO_pin0 17
+#define GPIO_pin1 17
 
 #define PERIOD 2000000 // In microseconds (2000000) = 2 seconds per step
 
@@ -123,7 +126,6 @@ bool send_pulses(int n_steps){
 }
 
 int main(){
-	int check = 0;
 	int i=0;
 
 	// Define pins in system as GPIO
@@ -148,4 +150,5 @@ int main(){
 	};	
 
 	clean_all(CHIP_1, PIN_1, CHIP_2, PIN_2);
+	return 0;
 };
