@@ -1,6 +1,9 @@
 #include "Arduino.h"
 #include "Driver.h"
 
+#define THRESHOLD 4800
+#define TIME_CONVERT 1
+
 // The next 2 functions were written just to avoid calling other libraries
 
 // Just return the upper_case of a char
@@ -24,6 +27,18 @@ int cmp_str(char* a, char* b){
 		};
 	};
 	return 0;	// They are not the same
+}
+
+// Return truncated value with max 255
+byte truncate(int value){
+	value = value*TIME_CONVERT;
+
+	if(value>255){
+		return (byte)255;
+	}
+	else {
+		return (byte)value;
+	};
 }
 
 // Function to verify if pin is in valid range, accepts digital and analog
@@ -62,6 +77,8 @@ Driver::Driver(){
 	this->_pos = 0;
 	this->_diameter = 1;
 	this->_end = 255;
+	this->_cumulative = 0;
+	this->moving = 0;
 }
 
 // Second constructor, string parameter
@@ -78,6 +95,8 @@ Driver::Driver(char* str){
 	this->_pos = 0;
 	this->_diameter = 1;
 	this->_end = 255;
+	this->_cumulative = 0;
+	this->moving = 0;
 }
 
 // Simply return the type, for debugging
@@ -274,9 +293,11 @@ void Driver::set_resolution(int res){
 void Driver::send_pulses(int steps){
 	// Check if is valid and output enabled
 	if(!is_set(this->_STP) || !output_enabled(this->_STP)){
+		this->moving = 0;
 		return;
-		digitalWrite(8, HIGH);
 	};
+	
+	this->_cumulative += steps;
 	
 	// The next line might not even be necessary, but it does not hurt to be secure
 	delayMicroseconds(1);	// 200ns for A4988 and 650ns for DRV8825, for security reasons, use 1000ns
@@ -288,19 +309,26 @@ void Driver::send_pulses(int steps){
 	
 	delay(this->_period/2);
 	
-	int i;
+	// Calculate again (Not really necessary, just good practice to maintain the calculation in this function)
+	this->moving = truncate(steps);
 	
-	for(i=0;i<steps;i++){
+	for(;steps>0;steps--){
 		if(!(this->locked())){				
 			digitalWrite(this->_STP, HIGH);
 			delay(this->_period/2);
 			digitalWrite(this->_STP, LOW);
 			delay(this->_period/2);
+			this->moving = truncate(steps);
 		}
 		else {
+			this->zero();
+			this->_pos = 0.0;
 			break;
 		};
 	};	
+	
+	// Sets the value telling the BBB it can move again
+	this->moving = 0;
 }
 
 void Driver::set_speed(float SPS){		// Speed input as Steps Per Second
@@ -373,17 +401,32 @@ int Driver::calculate_pulses(float orig, float dest){
 	return ((dest-orig)/(this->_diameter/2)*(180/3.1415926535))/this->_resolution; 	
 }
 
-void Driver::move(char mov/*='r'*/, float dist/*=0.0*/){
+void Driver::move(float dist=0.0, char mov='r'){
 	int n_pulses = 0;
+	
+	this->moving = 255;	// Sets maximum value because in this function anything can be done, we cant be sure yet
+	
+	// Take the motor to 0 and back if the cumulative steps is over a value
+	if(this->_cumulative > THRESHOLD){
+		if(mov == 'r'){
+			dist += this->_pos;
+			mov == 'a';
+		};
+		this->zero();
+	};
+	
+	
+	// Keeps the moving in 255, because the actual value to wait is still not calculated
 	
 	if(mov == 'a'){
 		// Absolute movement, goes to specific position
 		n_pulses = this->calculate_pulses(this->_pos, dist);
-		if(dist < 1e-6){	// Security, precision protects against misinterpretation of floating point
+		this->_pos = dist;
+		if(abs(dist) < 1e-6){	// Security, precision protects against misinterpretation of floating point
 			this->zero();
 			n_pulses = 0;
+			this->_pos = 0.0;
 		}
-		this->_pos = dist;
 	}
 	else {
 		// Relative movement
@@ -399,33 +442,61 @@ void Driver::move(char mov/*='r'*/, float dist/*=0.0*/){
 		this->set_direction(1);
 	};
 	
-	this->send_pulses(n_pulses);	
+	// Calculate actual value to send to the BBB
+	this->moving = truncate(n_pulses);
+	
+	this->send_pulses(n_pulses);
 }
 
 void move_together(Driver &drv_1, float dist_1, Driver &drv_2, float dist_2, char mov='r'){
 	// Check if both motors STEP pins are valid and output enabled
 	// If only one is enabled, send only one to move
 	
+	// Start both motors as moving
+	drv_1.moving = 255;
+	drv_2.moving = 255;
+	
 	if(!is_set(drv_1._STP) || !output_enabled(drv_1._STP) || !is_set(drv_2._STP) || !output_enabled(drv_2._STP)){
 		if(is_set(drv_1._STP) && output_enabled(drv_1._STP))
 			drv_1.move(mov, dist_1);
 		else if(is_set(drv_2._STP) && output_enabled(drv_2._STP))	
 			drv_2.move(mov, dist_2);
-		else
-			return;
+		else{
+			drv_1.moving = 0;
+			drv_2.moving = 0;
+		};	
+		return;
 	};
 
 	int zero_1 = 0, zero_2 = 0;
 
 	int pulses_1, pulses_2;
 	
+	// Check if need zero
+	if(drv_1._cumulative > THRESHOLD){
+		if(mov == 'r'){
+			dist_1 += drv_1._pos;
+			dist_2 += drv_2._pos;
+			mov = 'a';
+		};
+		drv_1.zero();
+	};
+	if(drv_2._cumulative > THRESHOLD){
+		if(mov == 'r'){
+			dist_1 += drv_1._pos;
+			dist_2 += drv_2._pos;
+			mov = 'a';
+		};
+		drv_2.zero();
+	};
+	
 	// Relative or absolute movement
 	if(mov=='a'){
-		if(dist_1 < 1e-6)
+		if(abs(dist_1) < 1e-6)
 			zero_1 = 1;
 		pulses_1 = drv_1.calculate_pulses(drv_1._pos, dist_1);
 		drv_1._pos = dist_1;
-		if(dist_2 < 1e-6)
+		if(abs(dist_2) < 1e-6)
 			zero_2 = 1;
 		pulses_2 = drv_2.calculate_pulses(drv_2._pos, dist_2);
 		drv_2._pos = dist_2;
@@ -471,8 +542,14 @@ void move_together(Driver &drv_1, float dist_1, Driver &drv_2, float dist_2, cha
 	unsigned long old_1 = millis();
 	unsigned long old_2 = old_1, time_1, time_2;
 	
+	drv_1._cumulative += pulses_1;
+	drv_2._cumulative += pulses_2;
+	
 	// The maximum speed expected is 500 SPS, so the periods of both motor is over 2 milliseconds
 	// Using millis() because the periods can be different
+	
+	drv_1.moving = truncate(pulses_1);
+	drv_2.moving = truncate(pulses_2);
 	
 	while(pulses_1 || pulses_2){
 		time_1 = millis();
@@ -480,37 +557,46 @@ void move_together(Driver &drv_1, float dist_1, Driver &drv_2, float dist_2, cha
 		if((time_1 - old_1 >= hp_1) && pulses_1){
 			if(!drv_1.locked()){
 				digitalWrite(drv_1._STP, step_1);
-				if(step_1)
+				if(step_1){
 					pulses_1--;
+					drv_1.moving = truncate(pulses_1);
+				};
 				step_1 = !step_1;
 			}
 			else {
 				pulses_1 = 0;	// Does not allow any more steps
 				zero_1 = 1;
+				drv_1.moving = 255; // Sets maximum value, telling BBB it must wait for zeroing function
 			};
 			old_1 = millis();
 		};
 		if((time_2 - old_2 >= hp_2) && pulses_2){
 			if(!drv_2.locked()){
 				digitalWrite(drv_2._STP, step_2);
-				if(step_2)
+				if(step_2){
 					pulses_2--;
+					drv_2.moving = truncate(pulses_2);
+				};
 				step_2 = !step_2;
 			}
 			else {
 				pulses_2 = 0;	// Does not allow any more steps
 				zero_2 = 1;
+				drv_2.moving = 255;	// Sets maximum value, telling BBB it must wait for zeroing function
 			};
 			old_2 = millis();
 		};
 	};
 	
 	if(zero_1 == 1){
-		drv_1.move('a', 0);
+		drv_1.move('a', 0.0);
 	};
 	if(zero_2 == 1){
-		drv_2.move('a', 0);
+		drv_2.move('a', 0.0);
 	};
+	
+	drv_1.moving = 0;
+	drv_2.moving = 0;
 }
 
 uint8_t return_value(uint8_t pin){
@@ -563,5 +649,7 @@ void Driver::zero(){
 		digitalWrite(this->_STP, LOW);
 		delay(this->_period/2);		
 	};	
+	
+	this->_cumulative = 0;
 	
 }
