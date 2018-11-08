@@ -379,6 +379,7 @@ bool seAlinhe(int eixo,int cor_linha)//SKIRA
 	int s1 = 0;  //random init values
 	int s2 = 0;  //random init values
 	int potA = 0, potB = 0;
+	//int revEixo = 0;
 
 	bool cond_S1_nS2 = false;
 	bool cond_nS1_S2 = false;
@@ -456,7 +457,7 @@ bool seAlinhe(int eixo,int cor_linha)//SKIRA
 
 void encaixaALinhaEntreSensores(int eixo,int cor_linha)
 {
-	
+	//
 
 	/////SKIRA (considera que pode tocar no barco
 }
