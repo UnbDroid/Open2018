@@ -212,6 +212,20 @@ int main ()
 		cout << "deu ruim na inicializacao"<<endl;
 		return 0;
 	}
+//////////////////////////////////////////////////////////////////////////////////
+/*
+	anda ate a linha de frente
+	anda ate a linha da direita
+	vira garra para a direcao dos containers e fica olhando ate pegar leitura deles
+	anda ate o meio do containers
+	alinha a garra com o container
+	ou chega a garra pra frente ou anda o robo pra frente
+	
+
+
+
+*/
+//////////////////////////////////////////////////////////////////////////////////
 /* 	cout<<"tentando andar "<<endl;
 	andaDistancia(20, X_POS);	
 	string retorno = string(SpiComm(0,(char *)"s",16));

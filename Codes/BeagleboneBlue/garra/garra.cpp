@@ -25,8 +25,12 @@ using namespace std;
 #define CHIP_NUMBER_2 3
 
 // Pin numbersin the respective chipset
-#define GPIO_pin0 P9_23
-#define GPIO_pin1 P9_28
+// #define GPIO_pin0 P9_23
+// #define GPIO_pin1 P9_28
+
+
+#define GPIO_pin0 17
+#define GPIO_pin1 17
 
 
 int main(){
@@ -56,7 +60,7 @@ int main(){
 			// Erro, nao mandou o valor
 			break;
 		};
-		rc_usleep(1000);
+		rc_usleep(1000000);
 		if(rc_gpio_set_value(CHIP_NUMBER_1, GPIO_pin0, 0)){
 			// Erro, nao mandou o valor
 			break;
@@ -65,7 +69,7 @@ int main(){
 			// Erro, nao mandou o valor
 			break;
 		};	
-		rc_usleep(1000);
+		rc_usleep(1000000);
 	}
 
 	rc_gpio_cleanup(CHIP_NUMBER_1, GPIO_pin0);
