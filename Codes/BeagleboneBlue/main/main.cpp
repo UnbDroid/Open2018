@@ -19,6 +19,9 @@ extern "C" {
 	#include <rc/servo.h>
 	#include <rc/adc.h>
 	#include <rc/cpu.h>
+	#include <rc/button.h>
+	#include <rc/led.h>
+	#include <rc/start_stop.h>
 }
 
 using namespace std;
@@ -45,8 +48,8 @@ using namespace std;
 	#define ID_MEXE_GARRA_Z (char *)"z "
 	#define ID_MEXE_GARRA_R (char *)"r "
 	#define ID_CHECA_GARRA (char *)"c"
-
-
+#define QUIT_TIMEOUT_US 1500000 // quit after 1.5 seconds holding pause button
+#define QUIT_CHECK_US	100000	// check every 1/10 second
 	#define HANDSHAKE_INICIO_US (unsigned char) 253
 	#define HANDSHAKE_FIM_US (unsigned char) 254
 
@@ -159,10 +162,10 @@ using namespace std;
 
 //	#define NORMALIZA_GIRO	DIFERENCA_PULSOS_MAXIMA/GIRO_MAXIMO
 	
-	#define PRIORIDADE_GIRO_FUSAO 0.66f
+	#define PRIORIDADE_GIRO_FUSAO 1.0f
 
-	#define KI 0.025f
-	#define KP 0.025f
+	#define KI 0.0f
+	#define KP 0.25f
 	long long int leEncoder(int motor);
 	void andaMotores(int direcao);
 	int inicializa();
@@ -176,6 +179,7 @@ using namespace std;
 	bool seAlinhe(int eixo,int cor_linha);
 	void setaPotencia(int motor_a, int pot);
 	void andaMotor(int motor);
+	void andaDistanciaSemControle(float dist,int eixo);
 	float velocidade_ref[4];
 	float pot_ref[4];
 	float orientacao_z;
@@ -205,7 +209,29 @@ using namespace std;
 	float anguloAlinhamentoPorUS(float us_dir, float us_esq);
 	
 /*------------------------------------------*/
+static void __on_pause_release(void)
+{
 
+}
+
+
+/**
+* If the user holds the pause button for 2 seconds, set state to exiting which
+* triggers the rest of the program to exit cleanly.
+*/
+static void __on_pause_press(void)
+{
+	// toggle betewen paused and running modes
+	rc_set_state(RUNNING);
+	return;
+}
+
+void andaAteAPilhaDeDireita()
+{
+	andaDistanciaSemControle(84, Y_POS);
+	andaDistanciaSemControle(70,X_POS);
+	andaDistanciaSemControle(25, Y_POS);
+}
 int main () 
 {
 	if (inicializa())
@@ -236,16 +262,9 @@ int main ()
 
 	// andaMotores(X_POS);
 	
-	andaDistancia(35,X_POS);
-	andaDistancia(35,Y_POS);
-//	andaDistancia(80,X_POS);
-//	andaDistancia(80,Y_NEG);
-	//andaDistancia(80,X_NEG);
-	//andaDistancia(80,X_POS);
-	//andaDistancia(80,Y_NEG);
-	//andaDistancia(40,X_NEG);
-	//pot_ref[MOTOR_DIREITA-1] = 80;
-	//andaMotor(MOTOR_DIREITA);
+	//andaDistancia(35,X_POS);
+	//andaDistancia(15,Y_POS);
+	andaAteAPilhaDeDireita();
 	while(running)
 	{
 		rc_usleep(500000);
@@ -300,6 +319,17 @@ int inicializa()
 	for(int i = 0; i < 4; i++)
 		pot_ref[i] = 0;
 	cout<<"terminou as inicializacoes"<<endl;
+	if(rc_button_init(RC_BTN_PIN_PAUSE, RC_BTN_POLARITY_NORM_HIGH,
+						RC_BTN_DEBOUNCE_DEFAULT_US)){
+		fprintf(stderr,"ERROR: failed to init buttons\n");
+		return -1;
+	}
+	rc_button_set_callbacks(RC_BTN_PIN_PAUSE, __on_pause_press, __on_pause_release);
+	rc_set_state(PAUSED);
+	while(rc_get_state()!=RUNNING){
+		// if the state is RUNNING (instead of PAUSED) then blink!
+		rc_usleep(100000);
+	}
 	return 0;
 }
 
@@ -584,7 +614,7 @@ void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot)
 		pot_ref[motor_a-1] = pot;
 		pot_ref[motor_b-1] = pot;
 	}
-	erro = (float)((1-PRIORIDADE_GIRO_FUSAO)*(leEncoder(motor_a) - leEncoder(motor_b))  + (PRIORIDADE_GIRO_FUSAO)*transformaAnguloEmErroEnc(orientacao_z)); //fusao entre encoder e giroscopio para andar reto com prioridade maior pro giroscopio
+	erro = (float)((1-PRIORIDADE_GIRO_FUSAO)*(leEncoder(motor_a) - leEncoder(motor_b))) + (PRIORIDADE_GIRO_FUSAO)*orientacao_z;//transformaAnguloEmErroEnc(orientacao_z)); //fusao entre encoder e giroscopio para andar reto com prioridade maior pro giroscopio
 	dt = rc_timespec_to_micros(ts_geral) - tempo_passado;
 	integral = integral_passado + (erro_passado / 1000000) * dt;
 	integral_passado = integral;
@@ -654,6 +684,96 @@ void andaAteALinha(int eixo, int cor_linha)
 }
 
 void andaDistancia(float dist,int eixo)
+{
+	long long int cont_inicial_1;
+	long long int cont_inicial_2;
+	long long int cont_atual_1 = 0;
+	long long int cont_atual_2 = 0;
+	switch(eixo)
+	{
+		case X_POS:
+			cont_inicial_1 = leEncoder(MOTOR_FRENTE);
+			cont_inicial_2 = leEncoder(MOTOR_TRAS);
+			cont_atual_1 = cont_inicial_1;
+			cont_atual_2 = cont_inicial_2;
+			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, POTENCIA_MAXIMA);
+			andaMotores(DIRECAO_X);
+			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
+			{
+				cont_atual_1 = leEncoder(MOTOR_FRENTE);
+				cont_atual_2 = leEncoder(MOTOR_TRAS);
+				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
+				andaMotores(DIRECAO_X);
+				cout<<"c1x+ "<<cont_atual_1<<" c2 "<<cont_atual_2<<endl;
+
+			}
+			rc_motor_brake(MOTOR_FRENTE);
+			rc_motor_brake(MOTOR_TRAS);
+			break;
+		case X_NEG:
+			cont_inicial_1 = leEncoder(MOTOR_FRENTE);
+			cont_inicial_2 = leEncoder(MOTOR_TRAS);
+			cont_atual_1 = cont_inicial_1;
+			cont_atual_2 = cont_inicial_2;
+			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, -POTENCIA_MAXIMA);
+			andaMotores(DIRECAO_X);
+			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
+			{
+				cont_atual_1 = leEncoder(MOTOR_FRENTE);
+				cont_atual_2 = leEncoder(MOTOR_TRAS);
+				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
+				cout<<"c1 x- "<<cont_atual_1<<" c2 "<<cont_atual_2<<endl;
+
+				andaMotores(DIRECAO_X);
+			}
+			rc_motor_brake(MOTOR_FRENTE);
+			rc_motor_brake(MOTOR_TRAS);
+			break;
+		case Y_POS:
+			cont_inicial_1 = leEncoder(MOTOR_DIREITA);
+			cont_inicial_2 = leEncoder(MOTOR_ESQUERDA);
+			cont_atual_1 = cont_inicial_1;
+			cont_atual_2 = cont_inicial_2;
+			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, POTENCIA_MAXIMA);
+			andaMotores(DIRECAO_Y);
+			cout<<"c1 y+ii "<<cont_atual_1<<" c2 "<<cont_atual_2<<endl;
+
+			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
+			{
+				cont_atual_1 = leEncoder(MOTOR_DIREITA);
+				cont_atual_2 = leEncoder(MOTOR_ESQUERDA);
+				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, POTENCIA_NORMAL);
+				cout<<"c1 y+ "<<cont_atual_1<<" c2 "<<cont_atual_2<<endl;
+				andaMotores(DIRECAO_Y);
+			}			
+			rc_motor_brake(MOTOR_DIREITA);
+			rc_motor_brake(MOTOR_ESQUERDA);
+			break;
+		case Y_NEG:
+			cont_inicial_1 = leEncoder(MOTOR_DIREITA);
+			cont_inicial_2 = leEncoder(MOTOR_ESQUERDA);
+			cont_atual_1 = cont_inicial_1;
+			cont_atual_2 = cont_inicial_2;
+			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, -POTENCIA_MAXIMA);
+			andaMotores(DIRECAO_Y);
+			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
+			{
+				cont_atual_1 = leEncoder(MOTOR_DIREITA);
+				cont_atual_2 = leEncoder(MOTOR_ESQUERDA);
+				cout<<"c1y- "<<cont_atual_1<<" c2 "<<cont_atual_2<<endl;
+				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, -POTENCIA_NORMAL);
+				andaMotores(DIRECAO_Y);
+			}
+			rc_motor_brake(MOTOR_DIREITA);
+			rc_motor_brake(MOTOR_ESQUERDA);
+			break;
+		default:
+			break;
+
+	}
+	//rc_motor_brake(TODOS_OS_MOTORES);
+}
+void andaDistanciaSemControle(float dist,int eixo)
 {
 	long long int cont_inicial_1;
 	long long int cont_inicial_2;
