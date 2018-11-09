@@ -236,11 +236,27 @@ using namespace std;
 	float anguloAlinhamentoPorUS(float us_dir, float us_esq);
 	
 /*------------------------------------------*/
+// Set first 2 as INPUT
+#define CHIP_input 1
+
+#define color_1 25
+#define color_2 17
+
+// Chip number in the beaglebone
+#define CHIP_output 3
+
+#define eletro 20
+
 static void __on_pause_release(void)
 {
 
 }
 
+void clean_all(/*int chip1, int step, int end_switch, int chip2, int dir*/){
+	rc_gpio_cleanup(CHIP_input, color_1);
+	rc_gpio_cleanup(CHIP_input, color_2);
+	rc_gpio_cleanup(CHIP_output, eletro);	
+}
 
 /**
 * If the user holds the pause button for 2 seconds, set state to exiting which
@@ -304,6 +320,45 @@ void entregaVerde1()
 	//ligaEletroIma(false);
 }
 
+bool start_all(){
+	// Start first input
+	if(rc_gpio_init(CHIP_input, color_1, GPIOHANDLE_REQUEST_INPUT)){
+		// Erro, nao foi possivel inicializar a leitura
+		return 1;
+	};	
+
+	// Start second input	
+	if(rc_gpio_init(CHIP_input, color_2, GPIOHANDLE_REQUEST_INPUT)){
+		// Erro, nao foi possivel inicializar a leitura
+		return 1;
+	};	
+
+	if(rc_gpio_init(CHIP_output, eletro, GPIOHANDLE_REQUEST_OUTPUT)){
+		// Erro, nao foi possivel inicializar a leitura
+		return 1;
+	};	
+}
+
+bool turn_magnets(bool signal){
+	if(rc_gpio_set_value(CHIP_output, eletro, signal))
+		return 1;
+}
+
+int get_color(){
+	int reading_1 = 0, reading_2 = 0;
+	
+	reading_1 = rc_gpio_get_value(CHIP_input, color_1);
+	reading_2 = rc_gpio_get_value(CHIP_input, color_2);
+	
+	if(reading_1 && reading_2)
+		return AZUL;
+	else if(reading_1)
+		return VERMELHO;
+	else if(reading_2)
+		return VERDE;
+	else 
+		return BRANCO;
+}
 
 int main () 
 {
@@ -343,6 +398,17 @@ int main ()
 	
 	//rc_usleep(500000);
 
+	if(start_all()){
+		clean_all();
+		//return 1;
+	};	
+	
+	// Send eletromagnets positive signal
+	if(turn_magnets(1)){
+		clean_all();
+		//return 1;
+	};	
+	
 	stateMachine();
 	
 	while(running)
@@ -352,7 +418,8 @@ int main ()
 	}
 
  	rc_motor_brake(TODOS_OS_MOTORES);
-/*
+	clean_all();
+	/*
 	lerSensores(SENSORES_US);
 	imprimeLeituras(SENSORES_LDR);
 	imprimeLeituras(SENSORES_COR); */
