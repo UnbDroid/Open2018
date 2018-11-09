@@ -18,6 +18,7 @@ extern "C" {
 	#include <rc/spi.h>
 	#include <rc/servo.h>
 	#include <rc/adc.h>
+	#include <rc/cpu.h>
 }
 
 using namespace std;
@@ -116,23 +117,24 @@ using namespace std;
 	static int running;
 	[[gnu::unused]] static void __signal_handler( [[gnu::unused]] int dummy);
 /*------------definicoes motores----------------*/
-	#define MOTOR_FRENTE 1
-	#define MOTOR_ESQUERDA 2
+	#define MOTOR_FRENTE 2
+	#define MOTOR_ESQUERDA 1
 	#define MOTOR_DIREITA 3
 	#define MOTOR_TRAS 4
 
 	#define TODOS_OS_MOTORES 0
 
-	#define DUTY_CYCLE_MAXIMO 0.725f //normaliza potencia
+	#define DUTY_CYCLE_MAXIMO 0.4f //normaliza potencia
 	#define NORMALIZA_POTENCIA DUTY_CYCLE_MAXIMO/100
 
 	#define DIRECAO_Y 1
 	#define DIRECAO_X 2
 
-	#define QUANTIDADE_PULSOS_POR_REV 350
+	#define QUANTIDADE_PULSOS_POR_REV 1400
 	#define QUANTIDADE_PULSOS_PRECISAO 5
 	#define DIAMETRO_DA_RODA 10.63f
 
+	#define POTENCIA_MAXIMA 100
 	#define POTENCIA_NORMAL 75
 	#define POTENCIA_FRACA 50
 
@@ -161,7 +163,7 @@ using namespace std;
 
 	#define KI 0.025f
 	#define KP 0.025f
-
+	long long int leEncoder(int motor);
 	void andaMotores(int direcao);
 	int inicializa();
 	void andaDistancia(float dist, int eixo);
@@ -170,6 +172,10 @@ using namespace std;
 	void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot);
 	void andaAteALinha(int eixo, int cor_linha);
 	float transformaAnguloEmErroEnc(float angulo);
+	bool seAlinhou(int eixo,int cor_linha);//SKIRA
+	bool seAlinhe(int eixo,int cor_linha);
+	void setaPotencia(int motor_a, int pot);
+	void andaMotor(int motor);
 	float velocidade_ref[4];
 	float pot_ref[4];
 	float orientacao_z;
@@ -207,24 +213,47 @@ int main ()
 		cout << "deu ruim na inicializacao"<<endl;
 		return 0;
 	}
+//////////////////////////////////////////////////////////////////////////////////
+/*
+	anda ate a linha de frente
+	anda ate a linha da direita
+	vira garra para a direcao dos containers e fica olhando ate pegar leitura deles
+	anda ate o meio do containers
+	alinha a garra com o container
+	ou chega a garra pra frente ou anda o robo pra frente
+
+
+*/
+//////////////////////////////////////////////////////////////////////////////////
 /* 	cout<<"tentando andar "<<endl;
 	andaDistancia(20, X_POS);	
 	string retorno = string(SpiComm(0,(char *)"s",16));
-	cout << retorno <<endl<<retorno.length()<<endl;
-	float pot = 50;
-	rc_motor_set(MOTOR_DIREITA,pot*NORMALIZA_POTENCIA);
-	rc_motor_set(MOTOR_FRENTE,-POTENCIA_NORMAL*NORMALIZA_POTENCIA);
-	rc_motor_set(MOTOR_TRAS,POTENCIA_NORMAL*NORMALIZA_POTENCIA);
-	rc_motor_set(MOTOR_ESQUERDA,-pot*NORMALIZA_POTENCIA);
- */
+	cout << retorno <<endl<<retorno.length()<<endl;*/
+	// float pot = 50;
+	//pot_ref[MOTOR_ESQUERDA-1] = 50;
+	// for(int i = 0; i < 4; i++)
+	// 	pot_ref[i] =POTENCIA_MAXIMA;
+
+	// andaMotores(X_POS);
+	
+	andaDistancia(35,X_POS);
+	andaDistancia(35,Y_POS);
+//	andaDistancia(80,X_POS);
+//	andaDistancia(80,Y_NEG);
+	//andaDistancia(80,X_NEG);
+	//andaDistancia(80,X_POS);
+	//andaDistancia(80,Y_NEG);
+	//andaDistancia(40,X_NEG);
+	//pot_ref[MOTOR_DIREITA-1] = 80;
+	//andaMotor(MOTOR_DIREITA);
 	while(running)
 	{
 		rc_usleep(500000);
 		cout << orientacao_z << endl;
 	}
 
-/* 	rc_motor_brake(TODOS_OS_MOTORES);
-
+ 	rc_motor_brake(TODOS_OS_MOTORES);
+/*
 	lerSensores(SENSORES_US);
 	imprimeLeituras(SENSORES_LDR);
 	imprimeLeituras(SENSORES_COR); */
@@ -234,7 +263,7 @@ int main ()
 int inicializa()
 {
 	signal(SIGINT, __signal_handler);
-	
+	rc_cpu_set_governor(RC_GOV_PERFORMANCE);
 	running = 1;	
 	system("config-pin p9.30 spi");
 	system("config-pin p9.31 spi_sclk");
@@ -245,14 +274,14 @@ int inicializa()
 	rc_mpu_config_t config = rc_mpu_default_config();
 	config.i2c_bus = I2C_BUS;
 	config.dmp_auto_calibrate_gyro = 1;
-	config.dmp_sample_rate = 4;
+	config.dmp_sample_rate = 200;
 	//config.enable_magnetometer = 1;
 	if(rc_mpu_calibrate_gyro_routine(config)<0){
 		cout << "Failed to complete gyro calibration\n";
 		return -1;
 	}
 	cout << "Gyro Calibrated." << endl;
-	cout << "\033[1;41m"<<"RODOU COM SUDO MERMAO ? SE NAO VOLTA E RODA COM SUDO"<<"\033[0m"<< endl;
+	std::cout << "\033[1;41m"<<"RODOU COM SUDO MERMAO ? SE NAO VOLTA E RODA COM SUDO"<<"\033[0m"<< endl;
 	if(rc_servo_init()) return -1;
 	
 
@@ -267,16 +296,39 @@ int inicializa()
 
 	rc_motor_init_freq(RC_MOTOR_DEFAULT_PWM_FREQ);
 	rc_encoder_init();
+	
+	for(int i = 0; i < 4; i++)
+		pot_ref[i] = 0;
 	cout<<"terminou as inicializacoes"<<endl;
 	return 0;
 }
 
+long long int leEncoder(int motor)
+{
+	switch(motor)
+	{
+		case MOTOR_FRENTE:
+			return rc_encoder_read(MOTOR_FRENTE);
+			break;
+		case MOTOR_ESQUERDA:
+			return rc_encoder_read(MOTOR_ESQUERDA);
+			break;
+		case MOTOR_DIREITA:
+			return -rc_encoder_read(MOTOR_DIREITA);
+			break;
+		case MOTOR_TRAS:
+			return -rc_encoder_read(MOTOR_TRAS);
+			break;
+		default:
+			return 0;		
+	}
+}
 /*
 void controleVel(int motor)
 {
 	//Measuring motor speed
-	mspeed = (float)(rc_encoder_read(motor) - prevencoderval);
-	prevencoderval = rc_encoder_read(motor) ;
+	mspeed = (float)(leEncoder(motor) - prevencoderval);
+	prevencoderval = leEncoder(motor) ;
 	mspeed = mspeed * 1000 / (2 * Ts);
 
 	error = velRef - mspeed;
@@ -300,15 +352,156 @@ void controleVel(int motor)
 	prevtime = micros();
 }
 */
-bool seAlinhou(int eixo,int cor_linha)
+
+void setaPotencia(int motor_a, int pot)//SKIRA
 {
-	/////SKIRA
-	return true;
+	pot_ref[motor_a-1] = pot;
+}
+
+void andaMotor(int motor)//SKIRA
+{
+	switch(motor)
+	{
+		case MOTOR_FRENTE:
+			if(abs(pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) 
+				rc_motor_set(MOTOR_FRENTE,-pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA);
+			else
+				rc_motor_set(MOTOR_FRENTE,-(abs(pot_ref[MOTOR_FRENTE-1])/(pot_ref[MOTOR_FRENTE-1]))*DUTY_CYCLE_MAXIMO);
+			break;
+		case MOTOR_TRAS:
+			if(abs(pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
+				rc_motor_set(MOTOR_TRAS,pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA);
+			else
+				rc_motor_set(MOTOR_TRAS,(abs(pot_ref[MOTOR_TRAS-1])/(pot_ref[MOTOR_TRAS-1]))*DUTY_CYCLE_MAXIMO);
+			break;
+		case MOTOR_DIREITA:
+				if(abs(pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
+					rc_motor_set(MOTOR_DIREITA,pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA);
+				else
+					rc_motor_set(MOTOR_DIREITA,(abs(pot_ref[MOTOR_DIREITA-1])/(pot_ref[MOTOR_DIREITA-1]))*DUTY_CYCLE_MAXIMO);
+			break;
+		case MOTOR_ESQUERDA:
+			if(abs(pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)	
+				rc_motor_set(MOTOR_ESQUERDA,-pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA);
+			else
+				rc_motor_set(MOTOR_ESQUERDA,-(abs(pot_ref[MOTOR_ESQUERDA-1])/(pot_ref[MOTOR_ESQUERDA-1]))*DUTY_CYCLE_MAXIMO);
+			break;
+	}
+}
+
+bool seAlinhou(int eixo,int cor_linha)//SKIRA
+{
+	bool cond = false;	
+	switch(eixo){
+		case X_POS:{
+			cond = (sensoresLDR[LDR_DIREITA_BAIXO] == cor_linha) && (sensoresLDR[LDR_DIREITA_CIMA] == cor_linha);
+			return cond;
+			break;
+		}case X_NEG:{
+			cond = (sensoresLDR[LDR_ESQUERDA_BAIXO] == cor_linha) && (sensoresLDR[LDR_ESQUERDA_CIMA] == cor_linha);
+			return cond;
+			break;
+		}case Y_POS:{
+			cond = (sensoresLDR[LDR_FRENTE_DIR] == cor_linha) && (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha);
+			return cond;
+			break;
+		}case Y_NEG:{
+			cond = (sensoresLDR[LDR_TRAS_DIR] == cor_linha) && (sensoresLDR[LDR_TRAS_ESQ] == cor_linha);
+			return cond;
+			break;
+		}default:
+			return false;
+			break;
+	}
+}
+
+bool seAlinhe(int eixo,int cor_linha)//SKIRA
+{
+	int mot_a=1; //random init values
+	int mot_b=1; //random init values 
+	int s1 = 0;  //random init values
+	int s2 = 0;  //random init values
+	int potA = 0, potB = 0;
+	//int revEixo = 0;
+
+	bool cond_S1_nS2 = false;
+	bool cond_nS1_S2 = false;
+	bool cond_nS1_nS2 = false;
+
+
+	switch(eixo){
+		case X_POS:
+			mot_a = MOTOR_FRENTE;
+			mot_b = MOTOR_TRAS;
+			s1 = LDR_DIREITA_CIMA;
+			s2 = LDR_DIREITA_BAIXO;
+			//revEixo = X_NEG;
+			break;
+		case X_NEG:
+			mot_a = MOTOR_TRAS;
+			mot_b = MOTOR_FRENTE;
+			s1 = LDR_ESQUERDA_BAIXO;
+			s2 = LDR_ESQUERDA_CIMA;
+			//revEixo = X_POS;
+			break;
+		case Y_POS:
+			mot_a = MOTOR_ESQUERDA;
+			mot_b = MOTOR_DIREITA;
+			s1 = LDR_FRENTE_ESQ;
+			s2 = LDR_FRENTE_DIR;
+			//revEixo = Y_NEG;
+			break;
+		case Y_NEG:
+			mot_a = MOTOR_DIREITA;
+			mot_b = MOTOR_ESQUERDA;
+			s1 = LDR_TRAS_DIR;
+			s2 = LDR_TRAS_ESQ;
+			//revEixo = Y_POS;
+			break;
+		default:
+			break;
+	}
+	while(!seAlinhou(eixo, cor_linha) && running)
+	{
+		lerSensores(SENSORES_CHASSIS);
+
+		cond_S1_nS2 = (sensoresLDR[s1] == cor_linha)&&(sensoresLDR[s2] != cor_linha);
+		cond_nS1_S2 = (sensoresLDR[s2] == cor_linha)&&(sensoresLDR[s1] != cor_linha);
+		cond_nS1_nS2 = (sensoresLDR[s2] != cor_linha)&&(sensoresLDR[s1] != cor_linha);
+
+		if(cond_S1_nS2)
+		{
+			potA = 0;
+			potB = POTENCIA_FRACA;
+		}
+		else if(cond_nS1_S2){
+			potB = 0;
+			potA = POTENCIA_FRACA;
+		}
+		else if(cond_nS1_nS2)
+		{
+			andaAteALinha(eixo, cor_linha);
+		}
+		setaPotencia(mot_a, potA);
+		setaPotencia(mot_b, potB);
+		andaMotor(mot_a);
+		andaMotor(mot_b);
+	}
+
+	////Fine ajustments
+	//andaAteALinha(eixo, cor_linha);
+	//andaDistancia(5, revEixo);
+
+
+	rc_motor_brake(TODOS_OS_MOTORES);
+	return false;
 }
 
 
-void encaixaAlinhaEntreSensores(int eixo,int cor_linha)
+void encaixaALinhaEntreSensores(int eixo,int cor_linha)
 {
+	//
+
 	/////SKIRA (considera que pode tocar no barco
 }
 
@@ -324,7 +517,7 @@ float anguloAlinhamentoPorUS(float us_dir, float us_esq)
 
 bool acabouDeAndarDist(long long int cont1, long long int cont2, float dist)
 {
-	return ((abs(cont1-cont2)< QUANTIDADE_PULSOS_PRECISAO) && abs(cont1)>=abs(round(dist*QUANTIDADE_PULSOS_POR_REV/DIAMETRO_DA_RODA)))? true : false;
+	return /*((abs(cont1-cont2)< QUANTIDADE_PULSOS_PRECISAO) && */ abs(cont1)>=abs(round(dist*QUANTIDADE_PULSOS_POR_REV/(PI*DIAMETRO_DA_RODA)))? true : false;
 }
 
 void __atualizaOrientacao()
@@ -363,7 +556,7 @@ bool chegouNaLinhaPorLDR(int eixo, int cor_linha)
 			return ((sensoresLDR[LDR_FRENTE_DIR] == cor_linha) || (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha));
 			break;
 		case Y_NEG:
-			return ((sensoresLDR[LDR_FRENTE_DIR] == cor_linha) || (sensoresLDR[LDR_FRENTE_ESQ] == cor_linha));
+			return ((sensoresLDR[LDR_TRAS_DIR] == cor_linha) || (sensoresLDR[LDR_TRAS_ESQ] == cor_linha));
 			break;
 		default:
 			return false;
@@ -391,7 +584,7 @@ void controleAndarReto(int motor_a, int motor_b, bool inicio, float pot)
 		pot_ref[motor_a-1] = pot;
 		pot_ref[motor_b-1] = pot;
 	}
-	erro = (float)((1-PRIORIDADE_GIRO_FUSAO)*(rc_encoder_read(motor_a) - rc_encoder_read(motor_b))  + (PRIORIDADE_GIRO_FUSAO)*transformaAnguloEmErroEnc(orientacao_z)); //fusao entre encoder e giroscopio para andar reto com prioridade maior pro giroscopio
+	erro = (float)((1-PRIORIDADE_GIRO_FUSAO)*(leEncoder(motor_a) - leEncoder(motor_b))  + (PRIORIDADE_GIRO_FUSAO)*transformaAnguloEmErroEnc(orientacao_z)); //fusao entre encoder e giroscopio para andar reto com prioridade maior pro giroscopio
 	dt = rc_timespec_to_micros(ts_geral) - tempo_passado;
 	integral = integral_passado + (erro_passado / 1000000) * dt;
 	integral_passado = integral;
@@ -415,6 +608,8 @@ void andaAteALinha(int eixo, int cor_linha)
 				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
 				andaMotores(DIRECAO_X);
 			}
+			rc_motor_brake(MOTOR_TRAS);
+			rc_motor_brake(MOTOR_FRENTE);
 			break;
 		case X_NEG:
 			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, -POTENCIA_NORMAL);
@@ -425,6 +620,8 @@ void andaAteALinha(int eixo, int cor_linha)
 				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
 				andaMotores(DIRECAO_X);
 			}
+			rc_motor_brake(MOTOR_TRAS);
+			rc_motor_brake(MOTOR_FRENTE);
 			break;
 		case Y_POS:
 			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, POTENCIA_NORMAL);
@@ -435,6 +632,8 @@ void andaAteALinha(int eixo, int cor_linha)
 				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, POTENCIA_NORMAL);
 				andaMotores(DIRECAO_Y);
 			}
+			rc_motor_brake(MOTOR_DIREITA);
+			rc_motor_brake(MOTOR_ESQUERDA);
 			break;
 		case Y_NEG:
 			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, -POTENCIA_NORMAL);
@@ -445,12 +644,13 @@ void andaAteALinha(int eixo, int cor_linha)
 				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, -POTENCIA_NORMAL);
 				andaMotores(DIRECAO_Y);
 			}
+			rc_motor_brake(MOTOR_DIREITA);
+			rc_motor_brake(MOTOR_ESQUERDA);
 			break;
 		default:
 			break;
 
 	}
-	rc_motor_brake(TODOS_OS_MOTORES);
 }
 
 void andaDistancia(float dist,int eixo)
@@ -462,91 +662,130 @@ void andaDistancia(float dist,int eixo)
 	switch(eixo)
 	{
 		case X_POS:
-			cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
-			cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
-			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, POTENCIA_NORMAL);
+			cont_inicial_1 = leEncoder(MOTOR_FRENTE);
+			cont_inicial_2 = leEncoder(MOTOR_TRAS);
+			cont_atual_1 = cont_inicial_1;
+			cont_atual_2 = cont_inicial_2;
+			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, POTENCIA_MAXIMA);
 			andaMotores(DIRECAO_X);
 			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
 			{
-				cont_atual_1 = rc_encoder_read(MOTOR_FRENTE);
-				cont_atual_2 = rc_encoder_read(MOTOR_TRAS);
-				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
-				andaMotores(DIRECAO_X);
+				cont_atual_1 = leEncoder(MOTOR_FRENTE);
+				cont_atual_2 = leEncoder(MOTOR_TRAS);
+				//controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
+				//andaMotores(DIRECAO_X);
+				cout<<"c1x+ "<<cont_atual_1<<" c2 "<<cont_atual_2<<endl;
+
 			}
+			rc_motor_brake(MOTOR_FRENTE);
+			rc_motor_brake(MOTOR_TRAS);
 			break;
 		case X_NEG:
-			cont_inicial_1 = rc_encoder_read(MOTOR_FRENTE);
-			cont_inicial_2 = rc_encoder_read(MOTOR_TRAS);
-			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, -POTENCIA_NORMAL);
+			cont_inicial_1 = leEncoder(MOTOR_FRENTE);
+			cont_inicial_2 = leEncoder(MOTOR_TRAS);
+			cont_atual_1 = cont_inicial_1;
+			cont_atual_2 = cont_inicial_2;
+			controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, true, -POTENCIA_MAXIMA);
 			andaMotores(DIRECAO_X);
 			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
 			{
-				cont_atual_1 = rc_encoder_read(MOTOR_FRENTE);
-				cont_atual_2 = rc_encoder_read(MOTOR_TRAS);
-				controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
+				cont_atual_1 = leEncoder(MOTOR_FRENTE);
+				cont_atual_2 = leEncoder(MOTOR_TRAS);
+				//controleAndarReto(MOTOR_FRENTE,MOTOR_TRAS, false, POTENCIA_NORMAL);
+			cout<<"c1 x- "<<cont_atual_1<<" c2 "<<cont_atual_2<<endl;
+
 				andaMotores(DIRECAO_X);
 			}
-
+			rc_motor_brake(MOTOR_FRENTE);
+			rc_motor_brake(MOTOR_TRAS);
 			break;
 		case Y_POS:
-			cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
-			cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
-			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, POTENCIA_NORMAL);
+			cont_inicial_1 = leEncoder(MOTOR_DIREITA);
+			cont_inicial_2 = leEncoder(MOTOR_ESQUERDA);
+			cont_atual_1 = cont_inicial_1;
+			cont_atual_2 = cont_inicial_2;
+			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, POTENCIA_MAXIMA);
 			andaMotores(DIRECAO_Y);
+			cout<<"c1 y+ii "<<cont_atual_1<<" c2 "<<cont_atual_2<<endl;
+
 			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
 			{
-				cont_atual_1 = rc_encoder_read(MOTOR_DIREITA);
-				cont_atual_2 = rc_encoder_read(MOTOR_ESQUERDA);
-				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, POTENCIA_NORMAL);
-				andaMotores(DIRECAO_Y);
-			}
+				cont_atual_1 = leEncoder(MOTOR_DIREITA);
+				cont_atual_2 = leEncoder(MOTOR_ESQUERDA);
+				//controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, POTENCIA_NORMAL);
+			cout<<"c1 y+ "<<cont_atual_1<<" c2 "<<cont_atual_2<<endl;
+
+				//andaMotores(DIRECAO_Y);
+			}			
+			rc_motor_brake(MOTOR_DIREITA);
+			rc_motor_brake(MOTOR_ESQUERDA);
 			break;
 		case Y_NEG:
-			cont_inicial_1 = rc_encoder_read(MOTOR_DIREITA);
-			cont_inicial_2 = rc_encoder_read(MOTOR_ESQUERDA);
-			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, -POTENCIA_NORMAL);
+			cont_inicial_1 = leEncoder(MOTOR_DIREITA);
+			cont_inicial_2 = leEncoder(MOTOR_ESQUERDA);
+			cont_atual_1 = cont_inicial_1;
+			cont_atual_2 = cont_inicial_2;
+			controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, true, -POTENCIA_MAXIMA);
 			andaMotores(DIRECAO_Y);
 			while(!acabouDeAndarDist(cont_atual_1-cont_inicial_1, cont_atual_2-cont_inicial_2, dist) && running)
 			{
-				cont_atual_1 = rc_encoder_read(MOTOR_DIREITA);
-				cont_atual_2 = rc_encoder_read(MOTOR_ESQUERDA);
-				controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, -POTENCIA_NORMAL);
-				andaMotores(DIRECAO_Y);
+				cont_atual_1 = leEncoder(MOTOR_DIREITA);
+				cont_atual_2 = leEncoder(MOTOR_ESQUERDA);
+				cout<<"c1y- "<<cont_atual_1<<" c2 "<<cont_atual_2<<endl;
+				//controleAndarReto(MOTOR_DIREITA,MOTOR_ESQUERDA, false, -POTENCIA_NORMAL);
+				//andaMotores(DIRECAO_Y);
 			}
+			rc_motor_brake(MOTOR_DIREITA);
+			rc_motor_brake(MOTOR_ESQUERDA);
 			break;
 		default:
 			break;
 
 	}
-	rc_motor_brake(TODOS_OS_MOTORES);
+	//rc_motor_brake(TODOS_OS_MOTORES);
 }
 //manda potencia pros motores considerando a saturacao
 void andaMotores(int direcao)
 {
 	if (direcao == DIRECAO_X)
 	{
-		if(abs(pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) 
-			rc_motor_set(MOTOR_FRENTE,pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA);
-		else
-			rc_motor_set(MOTOR_FRENTE,(abs(pot_ref[MOTOR_FRENTE-1])/(pot_ref[MOTOR_FRENTE-1]))*DUTY_CYCLE_MAXIMO);
-		
-		if(abs(pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
-			rc_motor_set(MOTOR_TRAS,pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA);
-		else
-			rc_motor_set(MOTOR_TRAS,(abs(pot_ref[MOTOR_TRAS-1])/(pot_ref[MOTOR_TRAS-1]))*DUTY_CYCLE_MAXIMO);
+		andaMotor(MOTOR_FRENTE);
+		andaMotor(MOTOR_TRAS);
+	
 	}else if(direcao == DIRECAO_Y)
 	{
-		if(abs(pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
-			rc_motor_set(MOTOR_DIREITA,pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA);
-		else
-			rc_motor_set(MOTOR_DIREITA,(abs(pot_ref[MOTOR_DIREITA-1])/(pot_ref[MOTOR_DIREITA-1]))*DUTY_CYCLE_MAXIMO);		
-		
-		if(abs(pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)	
-			rc_motor_set(MOTOR_ESQUERDA,pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA);
-		else
-			rc_motor_set(MOTOR_ESQUERDA,(abs(pot_ref[MOTOR_ESQUERDA-1])/(pot_ref[MOTOR_ESQUERDA-1]))*DUTY_CYCLE_MAXIMO);
+		andaMotor(MOTOR_DIREITA);
+		andaMotor(MOTOR_ESQUERDA);
 	}
 }
+
+// void andaMotores(int direcao) //DEPRECATED
+// {
+// 	if (direcao == DIRECAO_X)
+// 	{
+// 		if(abs(pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO) 
+// 			rc_motor_set(MOTOR_FRENTE,pot_ref[MOTOR_FRENTE-1]*NORMALIZA_POTENCIA);
+// 		else
+// 			rc_motor_set(MOTOR_FRENTE,(abs(pot_ref[MOTOR_FRENTE-1])/(pot_ref[MOTOR_FRENTE-1]))*DUTY_CYCLE_MAXIMO);
+		
+// 		if(abs(pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
+// 			rc_motor_set(MOTOR_TRAS,pot_ref[MOTOR_TRAS-1]*NORMALIZA_POTENCIA);
+// 		else
+// 			rc_motor_set(MOTOR_TRAS,(abs(pot_ref[MOTOR_TRAS-1])/(pot_ref[MOTOR_TRAS-1]))*DUTY_CYCLE_MAXIMO);
+// 	}else if(direcao == DIRECAO_Y)
+// 	{
+		
+// 		if(abs(pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)
+// 			rc_motor_set(MOTOR_DIREITA,pot_ref[MOTOR_DIREITA-1]*NORMALIZA_POTENCIA);
+// 		else
+// 			rc_motor_set(MOTOR_DIREITA,(abs(pot_ref[MOTOR_DIREITA-1])/(pot_ref[MOTOR_DIREITA-1]))*DUTY_CYCLE_MAXIMO);		
+		
+// 		if(abs(pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA) <= DUTY_CYCLE_MAXIMO)	
+// 			rc_motor_set(MOTOR_ESQUERDA,pot_ref[MOTOR_ESQUERDA-1]*NORMALIZA_POTENCIA);
+// 		else
+// 			rc_motor_set(MOTOR_ESQUERDA,(abs(pot_ref[MOTOR_ESQUERDA-1])/(pot_ref[MOTOR_ESQUERDA-1]))*DUTY_CYCLE_MAXIMO);
+// 	}
+// }
 
 string SpiComm(int canal, char* dado, int tamanho_resposta)
 {

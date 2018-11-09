@@ -48,10 +48,11 @@ class Driver{
 		float show_period();		// Show period for debugging reasons
 		void set_axis(char);		// Set the axis that the driver will be responsible for controlling
 		void set_diameter(float);	// Set the diameter to calculate conversion of rotational to translational movement, milimeters
-		void move(char, float);		// Move the driver, absolute 'a' or relative 'r' values, order = (X, Y, Z, I, J, K), milimeters
+		void move(float, char);		// Move the driver, absolute 'a' or relative 'r' values, order = (X, Y, Z, I, J, K), milimeters
 		int calculate_pulses(float, float);		// Calculate number of pulses to make a certain movement, milimeters 
 		int locked();				// Simply says if the motor is locked (hitting something and trying to move)
 		void zero();				// Takes the motor back to 0
+		char moving;				// Only variable that is public, to be accessed from SPI functions
 		friend void move_together(Driver &, float, Driver &, float, char);
 	private:
 		uint8_t _type;		// Using 8 bits to represent driver, 0 for DRV8825, 1 for A4988
@@ -69,6 +70,7 @@ class Driver{
 		float _pos;			// Position that the driver holds
 		float _diameter;	// Outer diameter of what is connected to the stepper 
 		float _resolution;	// Angular resolution, in degrees, that the driver will cause the stepper to rotate per step
+		int _cumulative;	// Cumulative distance needed for zeroing the motor
 };
 
 void move_together(Driver &, float, Driver &, float, char);
