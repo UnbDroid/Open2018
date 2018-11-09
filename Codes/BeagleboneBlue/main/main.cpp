@@ -142,7 +142,7 @@ using namespace std;
 
 	#define TODOS_OS_MOTORES 0
 
-	#define DUTY_CYCLE_MAXIMO 0.4f //normaliza potencia
+	#define DUTY_CYCLE_MAXIMO 0.425f //normaliza potencia
 	#define NORMALIZA_POTENCIA DUTY_CYCLE_MAXIMO/100
 
 	#define DIRECAO_Y 1
@@ -257,7 +257,7 @@ static void __on_pause_press(void)
 void stateMachine()
 {
 	andaAteAPilhaDeDireita();
-	voltaInit();
+	//voltaInit();
 			
 }
 
