@@ -97,12 +97,27 @@ using namespace std;
 	#define LDR_TRAS_DIR 6
 	#define LDR_TRAS_ESQ 7
 
+	#define TCS_1 0
+	#define TCS_2 1
+	#define TCS_3 2
+	#define TCS_4 3
+	#define TCS_5 4
+	
+
 	#define BRANCO 1 
 	#define PRETO 2 
 	#define VERDE 3 
 	#define AZUL 4
 	#define VERMELHO 5
 	
+	#define DIST_CONTEINER 10
+	#define DIST_NAVIOAZUL 8
+	#define DIST_NAVIOVERDE 8
+	#define DIST_CONTEINER  10
+
+	
+
+	void voltaInit();
 	void imprimeLeituras(int sensores);
 	void lerSensores(int sensores);
 
@@ -160,12 +175,23 @@ using namespace std;
 	#define DIFERENCA_PULSOS_MAXIMA 40
 	#define GIRO_MAXIMO 15
 
+	#define RAZAO_REAL 10/9
+
 //	#define NORMALIZA_GIRO	DIFERENCA_PULSOS_MAXIMA/GIRO_MAXIMO
 	
 	#define PRIORIDADE_GIRO_FUSAO 1.0f
 
 	#define KI 0.0f
 	#define KP 0.25f
+
+	void stateMachine();
+
+	void andaAteAPilhaDeDireita();
+	int pegaConteiner();
+	void entregaAzul1();
+	void entregaVerde1();
+
+
 	long long int leEncoder(int motor);
 	void andaMotores(int direcao);
 	int inicializa();
@@ -183,6 +209,7 @@ using namespace std;
 	float velocidade_ref[4];
 	float pot_ref[4];
 	float orientacao_z;
+	int state = 0;
 /*------------definicoes mpu--------------------*/
 	#define I2C_BUS 2
 	#define GPIO_INT_PIN_CHIP 3
@@ -226,12 +253,58 @@ static void __on_pause_press(void)
 	return;
 }
 
+
+void stateMachine()
+{
+	andaAteAPilhaDeDireita();
+	voltaInit();
+			
+}
+
 void andaAteAPilhaDeDireita()
 {
 	andaDistanciaSemControle(84, Y_POS);
-	andaDistanciaSemControle(70,X_POS);
+	andaDistanciaSemControle(70, X_POS);//70,X_POS);
 	andaDistanciaSemControle(25, Y_POS);
 }
+
+void voltaInit()
+{
+	//andaDistanciaSemControle(DIST_CONTEINER , X_POS);
+	andaDistanciaSemControle(109, Y_NEG);
+	//andaDistanciaSemControle(70,X_NEG);
+	
+}
+
+
+
+void startOver()
+{
+	andaDistancia(DIST_NAVIOAZUL, X_NEG);
+}
+
+int pegaConteiner()
+{
+	andaDistanciaSemControle(DIST_CONTEINER , X_NEG);
+	int cor = sensoresCOR[TCS_5];
+	return cor;
+}
+
+void entregaAzul1()
+{
+	//giraAzul();
+	andaDistancia(DIST_NAVIOAZUL, X_POS);
+	//ligaEletroIma(false);
+}
+
+void entregaVerde1()
+{
+	//giraVerde();
+	andaDistancia(DIST_NAVIOVERDE, X_NEG);
+	//ligaEletroIma(false);
+}
+
+
 int main () 
 {
 	if (inicializa())
@@ -264,11 +337,18 @@ int main ()
 	
 	//andaDistancia(35,X_POS);
 	//andaDistancia(15,Y_POS);
-	andaAteAPilhaDeDireita();
+	
+
+	//andaDistanciaSemControle(50*RAZAO_REAL, Y_POS);
+	
+	//rc_usleep(500000);
+
+	stateMachine();
+	
 	while(running)
 	{
 		rc_usleep(500000);
-		cout << orientacao_z << endl;
+	//	cout << orientacao_z << endl;
 	}
 
  	rc_motor_brake(TODOS_OS_MOTORES);
