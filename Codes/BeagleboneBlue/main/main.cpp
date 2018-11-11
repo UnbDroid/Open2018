@@ -26,9 +26,6 @@ extern "C" {
 
 using namespace std;
 
-#define PI 3.14159265f
-
-
 /*--------------definicoes do SPI---------------*/
 	#define CANAL_CHASSIS 0
 	#define CANAL_GARRA 1
@@ -177,6 +174,8 @@ using namespace std;
 
 	#define RAZAO_REAL 10/9
 
+	#define PI 3,1415926
+
 //	#define NORMALIZA_GIRO	DIFERENCA_PULSOS_MAXIMA/GIRO_MAXIMO
 	
 	#define PRIORIDADE_GIRO_FUSAO 1.0f
@@ -273,23 +272,25 @@ static void __on_pause_press(void)
 void stateMachine()
 {
 	andaAteAPilhaDeDireita();
-	//voltaInit();
 			
 }
 
 void andaAteAPilhaDeDireita()
 {
-	andaDistanciaSemControle(84, Y_POS);
-	andaDistanciaSemControle(70, X_POS);//70,X_POS);
-	andaDistanciaSemControle(25, Y_POS);
+	andaDistanciaSemControle(50, Y_POS);//89
+	//andaDistanciaSemControle(10, X_POS);
+	//andaDistanciaSemControle(25, Y_POS);
+	
+	
+
+	
 }
 
 void voltaInit()
 {
 	//andaDistanciaSemControle(DIST_CONTEINER , X_POS);
-	andaDistanciaSemControle(109, Y_NEG);
+	//andaDistanciaSemControle(100, Y_NEG);
 	//andaDistanciaSemControle(70,X_NEG);
-	
 }
 
 

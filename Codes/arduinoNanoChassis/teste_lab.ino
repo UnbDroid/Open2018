@@ -1,6 +1,6 @@
-#define S2 3
-#define S3 2
-#define OUT 4
+#define S2 10
+#define S3 11
+#define OUT 12
 
 #define VERMELHO 0
 #define VERDE 1
@@ -28,43 +28,43 @@ double classificarKNN ();
 void read_tcs();
 
 void setup() {
-  cores_conhecidas[0][0][0] = 226;
-  cores_conhecidas[0][1][0] = -31;
-  cores_conhecidas[0][2][0] = 3;
-  cores_conhecidas[0][0][1] = 2;
-  cores_conhecidas[0][1][1] = 236;
-  cores_conhecidas[0][2][1] = -35;
-  cores_conhecidas[0][0][2] = 192;
-  cores_conhecidas[0][1][2] = -30;
-  cores_conhecidas[0][2][2] = 4;
+  cores_conhecidas[0][0][0] = 230;
+  cores_conhecidas[0][1][0] = -37;
+  cores_conhecidas[0][2][0] = 4;
+  cores_conhecidas[0][0][1] = 234;
+  cores_conhecidas[0][1][1] = -35;
+  cores_conhecidas[0][2][1] = 4;
+  cores_conhecidas[0][0][2] = 236;
+  cores_conhecidas[0][1][2] = -35;
+  cores_conhecidas[0][2][2] = 3;
 
   //Verde
-  cores_conhecidas[1][0][0] = 115;
-  cores_conhecidas[1][1][0] = 2;
-  cores_conhecidas[1][2][0] = 3;
-  cores_conhecidas[1][0][1] = 139;
-  cores_conhecidas[1][1][1] = 4;
-  cores_conhecidas[1][2][1] = 3;
-  cores_conhecidas[1][0][2] = 189;
-  cores_conhecidas[1][1][2] = 22;
-  cores_conhecidas[1][2][2] = 2;
+  cores_conhecidas[1][0][0] = 220;
+  cores_conhecidas[1][1][0] = 16;
+  cores_conhecidas[1][2][0] = 1;
+  cores_conhecidas[1][0][1] = 220;
+  cores_conhecidas[1][1][1] = 17;
+  cores_conhecidas[1][2][1] = 1;
+  cores_conhecidas[1][0][2] = 240;
+  cores_conhecidas[1][1][2] = 11;
+  cores_conhecidas[1][2][2] = 0;
 
   //Azul
-  cores_conhecidas[2][0][0] = 120;
-  cores_conhecidas[2][1][0] = -1;
-  cores_conhecidas[2][2][0] = 6;
-  cores_conhecidas[2][0][1] = 142;
-  cores_conhecidas[2][1][1] = -2;
-  cores_conhecidas[2][2][1] = 9;
-  cores_conhecidas[2][0][2] = 225;
-  cores_conhecidas[2][1][2] = -2;
-  cores_conhecidas[2][2][2] = 32;
+  cores_conhecidas[2][0][0] = 198;
+  cores_conhecidas[2][1][0] = 13;
+  cores_conhecidas[2][2][0] = 22;
+  cores_conhecidas[2][0][1] = 244;
+  cores_conhecidas[2][1][1] = -5;
+  cores_conhecidas[2][2][1] = 26;
+  cores_conhecidas[2][0][2] = 248;
+  cores_conhecidas[2][1][2] = -9;
+  cores_conhecidas[2][2][2] = 33;
 
   //Preto
-  cores_conhecidas[3][0][0] = 120;
+  cores_conhecidas[3][0][0] = 255;
   cores_conhecidas[3][1][0] = 0;
-  cores_conhecidas[3][2][0] = 4;
-  cores_conhecidas[3][0][1] = 161;
+  cores_conhecidas[3][2][0] = 0;
+  cores_conhecidas[3][0][1] = 255;
   cores_conhecidas[3][1][1] = -3;
   cores_conhecidas[3][2][1] = 4;
   cores_conhecidas[3][0][2] = 255;
@@ -72,13 +72,13 @@ void setup() {
   cores_conhecidas[3][2][2] = 2;
 
   //Branco
-  cores_conhecidas[4][0][0] = 102;
+  cores_conhecidas[4][0][0] = 132;
   cores_conhecidas[4][1][0] = 1;
-  cores_conhecidas[4][2][0] = 3;
-  cores_conhecidas[4][0][1] = 103;
+  cores_conhecidas[4][2][0] = 5;
+  cores_conhecidas[4][0][1] = 131;
   cores_conhecidas[4][1][1] = 0;
   cores_conhecidas[4][2][1] = 5;
-  cores_conhecidas[4][0][1] = 103;
+  cores_conhecidas[4][0][1] = 135;
   cores_conhecidas[4][1][1] = 0;
   cores_conhecidas[4][2][1] = 5;
 
@@ -113,11 +113,11 @@ void loop() {
 
         if (aux2 < 0)
           aux2 = -1.0 * aux2;
-        /*
-          Serial.print("V:");
-          Serial.print(aux2);
-          Serial.print(":\t");
-          //*/
+        
+          //Serial.print("V:");
+          //Serial.print(aux2);
+          //Serial.print(":\t");
+          //
         aux += aux2;
       }
       if (aux < proximo) {
